@@ -29,9 +29,9 @@ final class NoSQLConnectionSingleton
     }
         
     /**
-	 * Opens connection to database server (if not already open) according to NoSQLDataSource and returns a NoSQLConnection object. 
+	 * Opens connection to database server (if not already open) according to NoSQLDataSource and returns an object of that connection to delegate operations to. 
      * 
-     * @return NoSQLConnection
+     * @return NoSQLDBOperations
      */
     public static function getInstance()   {
         if(self::$instance) {
@@ -44,14 +44,13 @@ final class NoSQLConnectionSingleton
     /**
      * Connects to database automatically.
      * 
-     * @throws NoSQLException
+     * @throws NoSQLConnectionException
      */
     private function __construct() {
-		if(!self::$dataSource) throw new NoSQLException("Datasource not set!");
-		$this->database_connection = null;
-		if(self::$dataSource instanceof CouchbaseDataSource) {
-		}
-        $this->database_connection = new NoSQLConnection();
+		if(!self::$dataSource) throw new NoSQLConnectionException("Datasource not set!");
+		$className = str_replace("DataSource","Driver",get_class(self::$dataSource));
+		if(!class_exists($className)) throw new NoSQLConnectionException("Class not found: ".$className);
+		$this->database_connection = new $className();
         $this->database_connection->connect(self::$dataSource);
     }
     
