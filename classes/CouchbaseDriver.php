@@ -1,29 +1,46 @@
 <?php
+require_once("CouchbaseDataSource.php");
+require_once("NoSQLDBOperations.php");
+require_once("NoSQLDBServer.php");
+
 /**
  * Defines couchbase implementation of nosql operations.
  *
  * DOCS: http://www.couchbase.com/communities/php/getting-started
  */
-class CouchbaseDriver implements NoSQLDBDriver {
+class CouchbaseDriver implements NoSQLDBOperations, NoSQLDBServer {
 	/**
 	 * @var Couchbase
 	 */
 	private $objConnection;
 
-	public function __construct($strServer, $intPort, $strBucket, $strUsername="", $strPassword="") {
-		$this->objConnection = new Couchbase($strServer.":".$intPort, $strUsername, $strPassword, $strBucket);
+	public function connect(NoSQLDataSource $dataSource) {
+		if(!$dataSource instanceof CouchbaseDataSource) throw new NoSQLConnectionException("Invalid data source type");
+		$this->objConnection = new Couchbase($dataSource->getHost().":".$dataSource->getPort(), $dataSource->getUserName(), $dataSource->getPassword());
+		$objBucketInfo = $dataSource->getBucketInfo();
+		if($objBucketInfo) {
+			$this->objConnection->openBucket($objBucketInfo->getName(), $objBucketInfo->getPassword());
+		}
+	}
+	
+	public function disconnect() {
+		$this->objConnection->disconnect();
 	}
 
 	public function add($key, $value, $expiration=0) {
-		return $this->objConnection->add($key, $value, $expiration);
+		$this->objConnection->add($key, $value, $expiration);
 	}
 
 	public function set($key, $value, $expiration=0) {
-		return $this->objConnection->set($key, $value, $expiration);
+		$this->objConnection->set($key, $value, $expiration);
 	}
 
 	public function get($key) {
 		return $this->objConnection->get($key);
+	}
+	
+	public function contains($key) {
+		return ($this->objConnection->get($key) == NULL && $this->objConnection->getResultCode() == COUCHBASE_KEY_ENOENT?false:true);
 	}
 
 	public function delete($key) {
