@@ -1,31 +1,42 @@
 <?php
+require_once("MemcachedDataSource.php");
+require_once("NoSQLDBOperations.php");
+require_once("NoSQLDBServer.php");
+
 /**
  * Defines memcached implementation of nosql operations.
  */
-class MemcachedDriver implements NoSQLDBDriver {
+class MemcachedDriver implements NoSQLDBOperations, NoSQLDBServer {
 	/**
 	 * @var Memcached
 	 */
 	private $objConnection;
 
-	public function __construct($tblHostsAndPorts) {
+	public function connect(NoSQLDataSource $dataSource) {
+		if(!$dataSource instanceof MemcachedDataSource) throw new NoSQLConnectionException("Invalid data source type");
 		$memcache = new Memcached();
-		foreach($tblHostsAndPorts as $memcacheServer=>$intPort) {
-			$memcache->addServer($memcacheServer, $intPort); // always returns true (so makes no sense checking), also throws no exception
-		}
+		$memcache->addServer($dataSource->getHost(), $dataSource->getPort()); 
 		$this->objConnection = $memcache;
+	}
+	
+	public function disconnect() {
+		$this->objConnection->quit();
 	}
 
 	public function add($key, $value, $expiration=0) {
-		return $this->objConnection->add($key, $value, $expiration);
+		$this->objConnection->add($key, $value, $expiration);
 	}
 
 	public function set($key, $value, $expiration=0) {
-		return $this->objConnection->set($key, $value, $expiration);
+		$this->objConnection->set($key, $value, $expiration);
 	}
 
 	public function get($key) {
 		return $this->objConnection->get($key);
+	}
+	
+	public function contains($key) {
+		return ($this->objConnection->get($key)!==false?true:false);
 	}
 
 	public function delete($key) {
