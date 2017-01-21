@@ -24,61 +24,32 @@ class BucketInformation {
  * Implements a data source.
 */
 class CouchbaseDataSource extends NoSQLDataSource {
-	private $strHost;
-	private $intPort;
 	private $strUserName;
 	private $strPassword;
 	
 	private $objBucketInfo;
 	
 	/**
-	 * Sets server host name
-	 *
-	 * @param string $strHost
-	 * @return void
+	 * Set bucket information.
+	 * 
+	 * @param string $strName Name of bucket.
+	 * @param string $strPassword Password of bucket.
 	 */
-	public function setHost($strHost) {
-		$this->strHost = $strHost;
-	}
-	
-	/**
-	 * Gets server host name
-	 *
-	 * @return string
-	 */
-	public function getHost() {
-		return $this->strHost;
-	}
-	
-	/**
-	 * Sets server port
-	 *
-	 * @param integer $intPort
-	 * @return void
-	 */
-	public function setPort($intPort) {
-		$this->intPort = $intPort;
-	}
-	
-	/**
-	 * Gets server port
-	 *
-	 * @return integer
-	 */
-	public function getPort() {
-		return $this->intPort;
-	}
-	
 	public function setBucketInfo($strName, $strPassword="") {
 		$this->objBucketInfo = new BucketInformation($strName, $strPassword);
 	}
 	
+	/**
+	 * Gets bucket information.
+	 * 
+	 * @return BucketInformation
+	 */
 	public function getBucketInfo() {
 		return $this->objBucketInfo;
 	}
 
 	/**
-	 * Sets database server user name
+	 * Sets server user name
 	 *
 	 * @param string $strUserName
 	 * @return void
