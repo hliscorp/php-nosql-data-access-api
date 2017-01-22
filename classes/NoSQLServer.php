@@ -2,7 +2,7 @@
 /**
  * Defines operations in connecting to single NoSQL server.
  */
-interface NoSQLDBServer {
+interface NoSQLServer {
 	/**
 	 * Connects to nosql provider
 	 *

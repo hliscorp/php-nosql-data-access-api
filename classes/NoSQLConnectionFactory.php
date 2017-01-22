@@ -17,7 +17,7 @@ final class NoSQLConnectionFactory {
 	private static $dataSources;
 	
     /**
-     * @var NoSQLDBServer
+     * @var NoSQLServer
      */
     private $database_connection = null;
 	
@@ -37,7 +37,7 @@ final class NoSQLConnectionFactory {
 	 * 
 	 * @param string $strServerName Unique identifier of server you will be connecting to.
 	 * @throws NoSQLConnectionException
-	 * @return NoSQLDBOperations
+	 * @return NoSQLConnection
 	 */
 	public static function getInstance($strServerName){
         if(isset(self::$instances[$strServerName])) {
@@ -64,7 +64,7 @@ final class NoSQLConnectionFactory {
 	/**
 	 * Internal utility to get connection.
 	 *
-	 * @return NoSQLDBOperations
+	 * @return NoSQLConnection
 	 */
 	private function getConnection() {
 		return $this->database_connection;

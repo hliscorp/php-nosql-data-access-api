@@ -15,7 +15,7 @@ final class NoSQLConnectionSingleton
     private static $instance = null;
     
     /**
-     * @var NoSQLDBServer
+     * @var NoSQLServer
      */
     private $database_connection = null;
     
@@ -31,7 +31,7 @@ final class NoSQLConnectionSingleton
     /**
 	 * Opens connection to database server (if not already open) according to NoSQLDataSource and returns an object of that connection to delegate operations to. 
      * 
-     * @return NoSQLDBOperations
+     * @return NoSQLConnection
      */
     public static function getInstance()   {
         if(self::$instance) {
@@ -57,7 +57,7 @@ final class NoSQLConnectionSingleton
     /**
      * Internal utility to get connection.
      * 
-     * @return NoSQLDBOperations
+     * @return NoSQLConnection
      */
     private function getConnection() {
         return $this->database_connection;

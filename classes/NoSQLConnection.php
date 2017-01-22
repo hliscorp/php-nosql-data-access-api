@@ -2,7 +2,7 @@
 /**
  * Defines common operations in a nosql database
  */
-interface NoSQLDBOperations {
+interface NoSQLConnection {
 	
 	/**
 	 * Adds value to store that will be accessible by key.
