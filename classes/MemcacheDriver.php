@@ -4,7 +4,7 @@ require_once("MemcacheDataSource.php");
 /**
  * Defines memcache implementation of nosql operations.
  */
-class MemcacheDriver implements NoSQLDBOperations, NoSQLDBServer {
+class MemcacheDriver implements NoSQLConnection, NoSQLServer {
 	/**
 	 * @var Memcache
 	 */

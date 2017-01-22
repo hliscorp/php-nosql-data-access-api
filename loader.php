@@ -1,2 +1,2 @@
 <?php
-require_once("classes/NoSQLDBOperations.php");
+require_once("classes/NoSQLConnection.php");

@@ -1,14 +1,14 @@
 <?php
 require_once("RedisDataSource.php");
-require_once("NoSQLDBOperations.php");
-require_once("NoSQLDBServer.php");
+require_once("NoSQLConnection.php");
+require_once("NoSQLServer.php");
 
 /**
  * Defines redis implementation of nosql operations.
  *
  * DOCS: https://github.com/nicolasff/phpredis/blob/master/README.markdown#connect-open
  */
-class RedisDriver implements NoSQLDBOperations, NoSQLDBServer {
+class RedisDriver implements NoSQLConnection, NoSQLServer {
 	/**
 	 * @var Redis
 	 */

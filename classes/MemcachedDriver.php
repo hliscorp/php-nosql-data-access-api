@@ -1,12 +1,12 @@
 <?php
 require_once("MemcachedDataSource.php");
-require_once("NoSQLDBOperations.php");
-require_once("NoSQLDBServer.php");
+require_once("NoSQLConnection.php");
+require_once("NoSQLServer.php");
 
 /**
  * Defines memcached implementation of nosql operations.
  */
-class MemcachedDriver implements NoSQLDBOperations, NoSQLDBServer {
+class MemcachedDriver implements NoSQLConnection, NoSQLServer {
 	/**
 	 * @var Memcached
 	 */
