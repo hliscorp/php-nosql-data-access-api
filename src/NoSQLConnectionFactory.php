@@ -55,7 +55,7 @@ final class NoSQLConnectionFactory {
 	 */
 	private function __construct($strServerName) {
 		if(!isset(self::$dataSources[$strServerName])) throw new NoSQLConnectionException("Datasource not set for: ".$strServerName);
-		$className = str_replace("DataSource","Driver",get_class(self::$dataSources[$strServerName]));
+		$className = str_replace("DataSource","Connection",get_class(self::$dataSources[$strServerName]));
 		if(!class_exists($className)) throw new NoSQLConnectionException("Class not found: ".$className);
 		$this->database_connection = new $className();
 		$this->database_connection->connect(self::$dataSources[$strServerName]);

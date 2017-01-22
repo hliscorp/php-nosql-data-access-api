@@ -1,34 +1,32 @@
 <?php
-require_once("MemcachedDataSource.php");
-require_once("NoSQLConnection.php");
-require_once("NoSQLServer.php");
+require_once("MemcacheDataSource.php");
 
 /**
- * Defines memcached implementation of nosql operations.
+ * Defines memcache implementation of nosql operations.
  */
-class MemcachedDriver implements NoSQLConnection, NoSQLServer {
+class MemcacheConnection implements NoSQLConnection, NoSQLServer {
 	/**
-	 * @var Memcached
+	 * @var Memcache
 	 */
 	private $objConnection;
 
 	public function connect(NoSQLDataSource $dataSource) {
-		if(!$dataSource instanceof MemcachedDataSource) throw new NoSQLConnectionException("Invalid data source type");
-		$memcache = new Memcached();
+		if(!$dataSource instanceof MemcacheDataSource) throw new NoSQLConnectionException("Invalid data source type");
+		$memcache = new Memcache();
 		$memcache->addServer($dataSource->getHost(), $dataSource->getPort()); 
 		$this->objConnection = $memcache;
 	}
 	
 	public function disconnect() {
-		$this->objConnection->quit();
+		$this->objConnection->close();
 	}
 
 	public function add($key, $value, $expiration=0) {
-		$this->objConnection->add($key, $value, $expiration);
+		$this->objConnection->add($key, $value, false, $expiration);
 	}
 
 	public function set($key, $value, $expiration=0) {
-		$this->objConnection->set($key, $value, $expiration);
+		$this->objConnection->set($key, $value, 0, $expiration);
 	}
 
 	public function get($key) {
