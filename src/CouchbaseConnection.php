@@ -1,14 +1,12 @@
 <?php
 require_once("CouchbaseDataSource.php");
-require_once("NoSQLConnection.php");
-require_once("NoSQLServer.php");
 
 /**
  * Defines couchbase implementation of nosql operations.
  *
  * DOCS: http://www.couchbase.com/communities/php/getting-started
  */
-class CouchbaseDriver implements NoSQLConnection, NoSQLServer {
+class CouchbaseConnection implements NoSQLConnection, NoSQLServer {
 	/**
 	 * @var Couchbase
 	 */

@@ -4,7 +4,7 @@
  *
  * DOCS: http://php.net/manual/en/book.apc.php
  */
-class APCDriver implements NoSQLConnection {
+class APCConnection implements NoSQLConnection {
 	public function add($key, $value, $expiration=0) {
 		apc_add($key, $value, $expiration);
 	}
