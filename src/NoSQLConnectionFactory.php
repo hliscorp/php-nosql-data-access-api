@@ -75,7 +75,9 @@ final class NoSQLConnectionFactory {
 	 */
 	public function __destruct() {
 		try {
-			$this->database_connection->disconnect();
+        	if($this->database_connection) {
+				$this->database_connection->disconnect();
+        	}
 		} catch(Exception $e) {}
 	}
 	
