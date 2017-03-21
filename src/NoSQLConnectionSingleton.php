@@ -48,7 +48,7 @@ final class NoSQLConnectionSingleton
      */
     private function __construct() {
 		if(!self::$dataSource) throw new NoSQLConnectionException("Datasource not set!");
-		$className = str_replace("DataSource","Driver",get_class(self::$dataSource));
+		$className = str_replace("DataSource","Connection",get_class(self::$dataSource));
 		if(!class_exists($className)) throw new NoSQLConnectionException("Class not found: ".$className);
 		$this->database_connection = new $className();
         $this->database_connection->connect(self::$dataSource);
@@ -68,7 +68,9 @@ final class NoSQLConnectionSingleton
      */
     public function __destruct() {
         try {
-            $this->database_connection->disconnect();
+        	if($this->database_connection) {
+            	$this->database_connection->disconnect();
+        	}
         } catch(Exception $e) {}
     }
 }
