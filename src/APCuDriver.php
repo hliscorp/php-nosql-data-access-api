@@ -4,7 +4,7 @@
 *
 * DOCS: http://php.net/manual/en/book.apcu.php
 */
-class APCuConnection implements NoSQLConnection {
+class APCuDriver implements NoSQLDriver {
 	public function add($key, $value, $expiration=0) {
 		apcu_add($key, $value, $expiration);
 	}
@@ -31,5 +31,9 @@ class APCuConnection implements NoSQLConnection {
 
 	public function decrement($key, $offset = 1) {
 		return apcu_dec($key, $offset);
+	}
+	
+	public function flush() {
+		apcu_clear_cache();
 	}
 }
