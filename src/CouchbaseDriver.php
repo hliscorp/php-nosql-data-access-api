@@ -6,7 +6,7 @@ require_once("CouchbaseDataSource.php");
  *
  * DOCS: http://www.couchbase.com/communities/php/getting-started
  */
-class CouchbaseConnection implements NoSQLConnection, NoSQLServer {
+class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * @var Couchbase
 	 */
@@ -51,5 +51,9 @@ class CouchbaseConnection implements NoSQLConnection, NoSQLServer {
 
 	public function decrement($key, $offset = 1) {
 		return $this->objConnection->decrement($key, $offset);
+	}
+	
+	public function flush() {
+		$this->objConnection->flush();
 	}
 }

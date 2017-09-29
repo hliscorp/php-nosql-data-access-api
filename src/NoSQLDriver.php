@@ -2,7 +2,7 @@
 /**
  * Defines common operations in a nosql database
  */
-interface NoSQLConnection {
+interface NoSQLDriver {
 	
 	/**
 	 * Adds value to store that will be accessible by key.
@@ -61,4 +61,9 @@ interface NoSQLConnection {
 	 * @return integer Decremented value (0 if key originally did not exist)
 	 */
 	public function decrement($key, $offset = 1);
+	
+	/**
+	 * Flushes DB of all keys.
+	 */
+	public function flush();
 }

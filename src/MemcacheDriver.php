@@ -4,7 +4,7 @@ require_once("MemcacheDataSource.php");
 /**
  * Defines memcache implementation of nosql operations.
  */
-class MemcacheConnection implements NoSQLConnection, NoSQLServer {
+class MemcacheDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * @var Memcache
 	 */
@@ -47,5 +47,9 @@ class MemcacheConnection implements NoSQLConnection, NoSQLServer {
 
 	public function decrement($key, $offset = 1) {
 		return $this->objConnection->decrement($key, $offset);
+	}
+	
+	public function flush() {
+		$this->objConnection->flush();
 	}
 }

@@ -21,7 +21,7 @@ class BucketInformation {
 }
 
 /**
- * Implements a data source.
+ * Encapsulates couchbase server connection & bucket data.
 */
 class CouchbaseDataSource extends NoSQLDataSource {
 	private $strUserName;

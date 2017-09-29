@@ -6,7 +6,7 @@ require_once("RedisDataSource.php");
  *
  * DOCS: https://github.com/nicolasff/phpredis/blob/master/README.markdown#connect-open
  */
-class RedisConnection implements NoSQLConnection, NoSQLServer {
+class RedisDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * @var Redis
 	 */
@@ -60,5 +60,9 @@ class RedisConnection implements NoSQLConnection, NoSQLServer {
 		} else {
 			return $this->objConnection->decrBy($key, $offset);
 		}
+	}
+	
+	public function flush() {
+		$this->objConnection->flushAll();
 	}
 }
