@@ -1,4 +1,5 @@
 <?php
+require_once("APCuDataSource.php");
 /**
  * Defines APCu implementation of nosql operations.
 *

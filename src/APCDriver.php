@@ -1,4 +1,5 @@
 <?php
+require_once("APCDataSource.php");
 /**
  * Defines APC implementation of nosql operations.
  *
