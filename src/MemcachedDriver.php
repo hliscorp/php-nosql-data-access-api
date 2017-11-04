@@ -13,7 +13,11 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 	public function connect(NoSQLDataSource $dataSource) {
 		if(!$dataSource instanceof MemcachedDataSource) throw new NoSQLConnectionException("Invalid data source type");
 		$memcache = new Memcached();
-		$memcache->addServer($dataSource->getHost(), $dataSource->getPort()); 
+		$servers = $dataSource->getServers();
+		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
+		foreach($servers as $host=>$port) {
+			$memcache->addServer($host, $port);
+		}		 
 		$this->objConnection = $memcache;
 	}
 	
@@ -21,35 +25,76 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 		$this->objConnection->quit();
 	}
 
-	public function add($key, $value, $expiration=0) {
-		$this->objConnection->add($key, $value, $expiration);
-	}
-
 	public function set($key, $value, $expiration=0) {
-		$this->objConnection->set($key, $value, $expiration);
+		$result = $this->objConnection->set($key, $value, $expiration);
+		if(!$result) {
+			$resultCode = $this->objConnection->getResultCode();
+			throw new OperationFailedException((string) $resultCode);
+		}
 	}
 
 	public function get($key) {
-		return $this->objConnection->get($key);
+		$result = $this->objConnection->get($key);
+		if($result===FALSE) {
+			$resultCode = $this->objConnection->getResultCode();
+			if(Memcached::RES_NOTFOUND == $resultCode) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException((string) $resultCode);
+			}
+		}
+		return $result;
 	}
 	
 	public function contains($key) {
-		return ($this->objConnection->get($key)!==false?true:false);
+		$this->objConnection->get($key);
+		return (Memcached::RES_NOTFOUND == $this->objConnection->getResultCode()?false:true);
 	}
 
 	public function delete($key) {
-		$this->objConnection->delete($key);
+		$result = $this->objConnection->delete($key);
+		if(!$result) {
+			$resultCode = $this->objConnection->getResultCode();
+			if(Memcached::RES_NOTFOUND == $resultCode) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException((string) $resultCode);
+			}
+		}
 	}
 
 	public function increment($key, $offset = 1) {
-		return $this->objConnection->increment($key, $offset);
+		$result = $this->objConnection->increment($key, $offset); // driver automatically creates not found key as "0"
+		if($result===FALSE) {
+			$resultCode = $this->objConnection->getResultCode();
+			throw new OperationFailedException((string) $resultCode);
+		}
+		return $result;
 	}
 
 	public function decrement($key, $offset = 1) {
-		return $this->objConnection->decrement($key, $offset);
+		$result = $this->objConnection->decrement($key, $offset); // driver automatically creates not found key as "0"
+		if($result===FALSE) {
+			$resultCode = $this->objConnection->getResultCode();
+			throw new OperationFailedException((string) $resultCode);
+		}
+		return $result;
 	}
 	
 	public function flush() {
-		$this->objConnection->flush();
+		$result = $this->objConnection->flush();
+		if(!$result) {
+			$resultCode = $this->objConnection->getResultCode();
+			throw new OperationFailedException((string) $resultCode);
+		}
+	}
+	
+	/**
+	 * Gets a pointer to native wrapped object for advanced operations.
+	 *
+	 * @return Memcached
+	 */
+	public function getDriver() {
+		return $this->objConnection;
 	}
 }

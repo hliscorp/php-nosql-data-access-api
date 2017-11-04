@@ -13,7 +13,11 @@ class MemcacheDriver implements NoSQLDriver, NoSQLServer {
 	public function connect(NoSQLDataSource $dataSource) {
 		if(!$dataSource instanceof MemcacheDataSource) throw new NoSQLConnectionException("Invalid data source type");
 		$memcache = new Memcache();
-		$memcache->addServer($dataSource->getHost(), $dataSource->getPort()); 
+		$servers = $dataSource->getServers();
+		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
+		foreach($servers as $host=>$port) {
+			$memcache->addServer($host, $port);
+		}		 
 		$this->objConnection = $memcache;
 	}
 	
@@ -21,16 +25,19 @@ class MemcacheDriver implements NoSQLDriver, NoSQLServer {
 		$this->objConnection->close();
 	}
 
-	public function add($key, $value, $expiration=0) {
-		$this->objConnection->add($key, $value, false, $expiration);
-	}
-
 	public function set($key, $value, $expiration=0) {
-		$this->objConnection->set($key, $value, 0, $expiration);
+		$result = $this->objConnection->set($key, $value, 0, $expiration);
+		if(!$result) {
+			throw new OperationFailedException();
+		}
 	}
 
 	public function get($key) {
-		return $this->objConnection->get($key);
+		$result = $this->objConnection->get($key); // driver makes it impossible to distinguish between false and failure
+		if($result===false) {
+			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
+		}
+		return $result;
 	}
 	
 	public function contains($key) {
@@ -38,18 +45,42 @@ class MemcacheDriver implements NoSQLDriver, NoSQLServer {
 	}
 
 	public function delete($key) {
-		$this->objConnection->delete($key);
+		$result = $this->objConnection->delete($key);
+		if(!$result) {
+			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
+		}
 	}
 
 	public function increment($key, $offset = 1) {
-		return $this->objConnection->increment($key, $offset);
+		$result = $this->objConnection->increment($key, $offset);
+		if($result===false) {
+			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
+		}
+		return $result;
 	}
 
 	public function decrement($key, $offset = 1) {
-		return $this->objConnection->decrement($key, $offset);
+		$result = $this->objConnection->decrement($key, $offset);
+		if($result===false) {
+			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
+		}
+		return $result;
 	}
 	
 	public function flush() {
 		$this->objConnection->flush();
+		if(!$result) {
+			throw new OperationFailedException();
+		}
+	}
+	
+	
+	/**
+	 * Gets a pointer to native wrapped object for advanced operations.
+	 *
+	 * @return Memcache
+	 */
+	public function getDriver() {
+		return $this->objConnection;
 	}
 }
