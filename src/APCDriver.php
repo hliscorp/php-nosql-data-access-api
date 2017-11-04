@@ -2,24 +2,36 @@
 require_once("APCDataSource.php");
 /**
  * Defines APC implementation of nosql operations.
- *
- * DOCS: http://php.net/manual/en/book.apc.php
  */
 class APCDriver implements NoSQLDriver {
-	public function add($key, $value, $expiration=0) {
-		apc_add($key, $value, $expiration);
-	}
-
 	public function set($key, $value, $expiration=0) {
-		apc_store($key, $value, $expiration);
+		$result = apc_store($key, $value, $expiration);
+		if(!$result) {
+			throw new OperationFailedException();
+		}
 	}
 
 	public function get($key) {
-		return apc_fetch($key);
+		$result = apc_fetch($key);
+		if($result===FALSE) {
+			if(!apc_exists($key)) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException();
+			}
+		}
+		return $result;
 	}
 
 	public function delete($key) {
-		apc_delete($key);
+		$result = apc_delete($key);
+		if(!$result) {
+			if(!apc_exists($key)) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException();
+			}
+		}
 	}
 	
 	public function contains($key) {
@@ -27,14 +39,33 @@ class APCDriver implements NoSQLDriver {
 	}
 
 	public function increment($key, $offset = 1) {
-		return apc_inc($key, $offset);
+		$result = apc_inc($key, $offset);
+		if($result===FALSE) {
+			if(!apc_exists($key)) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException();
+			}
+		}
+		return $result;
 	}
 
 	public function decrement($key, $offset = 1) {
-		return apc_dec($key, $offset);
+		$result = apc_dec($key, $offset);
+		if($result===FALSE) {
+			if(!apc_exists($key)) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException();
+			}
+		}
+		return $result;
 	}
 	
 	public function flush() {
-		apc_clear_cache();
+		$result = apc_clear_cache();
+		if(!$result) {
+			throw new OperationFailedException();
+		}
 	}
 }

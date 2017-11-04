@@ -2,23 +2,14 @@
 /**
  * Defines common operations in a nosql database
  */
-interface NoSQLDriver {
-	
-	/**
-	 * Adds value to store that will be accessible by key.
-	 * 
-	 * @param string $key Key based on which value will be accessible.
-	 * @param mixed $value Value to store.
-	 * @param integer $expiration Time to live in seconds until expiration (0: never expires)
-	 */
-	public function add($key, $value, $expiration=0);
-	
+interface NoSQLDriver {	
 	/**
 	 * Sets value to store that will be accessible by key.
 	 * 
 	 * @param string $key Key based on which value will be accessible.
 	 * @param mixed $value Value to store.
 	 * @param integer $expiration Time to live in seconds until expiration (0: never expires)
+	 * @throws OperationFailedException If operation didn't succeed.
 	 */
 	public function set($key, $value, $expiration=0);
 	
@@ -27,6 +18,8 @@ interface NoSQLDriver {
 	 * 
 	 * @param string $key Key based on which value will be searched.
 	 * @return mixed Resulting value.
+	 * @throws KeyNotFoundException If key doesn't exist in store.
+	 * @throws OperationFailedException If operation didn't succeed.
 	 */
 	public function get($key);
 	
@@ -34,6 +27,8 @@ interface NoSQLDriver {
 	 * Deletes value by key.
 	 * 
 	 * @param string $key Key based on which value will be searched.
+	 * @throws KeyNotFoundException If key doesn't exist in store.
+	 * @throws OperationFailedException If operation didn't succeed.
 	 */
 	public function delete($key);
 
@@ -41,6 +36,7 @@ interface NoSQLDriver {
 	 * Checks if key to access value from exists.
 	 *
 	 * @param string $key Key based on which value will be searched.
+	 * @return boolean
 	 */
 	public function contains($key);
 	
@@ -49,7 +45,9 @@ interface NoSQLDriver {
 	 * 
 	 * @param string $key Key based on which counter will be accessible from
 	 * @param integer $offset Incrementation step.
-	 * @return integer Incremented value (1 if key originally did not exist)
+	 * @return integer Incremented value (value of offset if key originally did not exist)
+	 * @throws KeyNotFoundException If key doesn't exist in store.
+	 * @throws OperationFailedException If operation didn't succeed.
 	 */
 	public function increment($key, $offset = 1);
 	
@@ -58,7 +56,9 @@ interface NoSQLDriver {
 	 * 
 	 * @param string $key Key based on which counter will be accessible from
 	 * @param integer $offset Decrementation step.
-	 * @return integer Decremented value (0 if key originally did not exist)
+	 * @return integer Decremented value (value of offset if key originally did not exist)
+	 * @throws KeyNotFoundException If key doesn't exist in store.
+	 * @throws OperationFailedException If operation didn't succeed.
 	 */
 	public function decrement($key, $offset = 1);
 	

@@ -3,44 +3,32 @@
  * Encapsulates a data source to use for redis connections.
  */
 class RedisDataSource extends NoSQLDataSource {
-	private $strHost;
-	private $intPort;
+	private $servers = array();
 	
-	/**
-	 * Sets database server host name
-	 *
-	 * @param string $strHost
-	 * @return void
-	 */
-	public function setHost($strHost) {
-		$this->strHost = $strHost;
+	private $timeout;
+	private $persistent = false;
+	
+	public function addServer($strHost, $intPort = 6379) {
+		$this->servers[$strHost] = $intPort;
+	}
+		
+	public function getServers() {
+		return $this->servers;
 	}
 	
-	/**
-	 * Gets database server host name
-	 *
-	 * @return string
-	 */
-	public function getHost() {
-		return $this->strHost;
+	public function setTimeout($intSeconds) {
+		$this->timeout = $intSeconds;
 	}
 	
-	/**
-	 * Sets database server port
-	 *
-	 * @param integer $intPort
-	 * @return void
-	 */
-	public function setPort($intPort) {
-		$this->intPort = $intPort;
+	public function getTimeout() {
+		return $this->timeout;
 	}
 	
-	/**
-	 * Gets database server port
-	 *
-	 * @return integer
-	 */
-	public function getPort() {
-		return $this->intPort;
+	public function setPersistent() {
+		$this->persistent = true;
+	}
+	
+	public function isPersistent() {
+		return $this->persistent;
 	}
 }
