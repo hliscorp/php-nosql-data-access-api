@@ -1,18 +1,8 @@
 <?php
 require_once("NoSQLDataSource.php");
+require_once("NoSQLServerDataSource.php");
 
 /**
- * Encapsulates a data source to use for memcached connections.
+ * Encapsulates a data source to use for memcached connections via memcached driver.
  */
-class MemcachedDataSource implements NoSQLDataSource  {
-	private $servers = array();
-	
-	public function addServer($strHost, $intPort = 11211) {
-		$this->servers[$strHost] = $intPort;
-	}
-	
-	
-	public function getServers() {
-		return $this->servers;
-	}
-}
+class MemcachedDataSource extends NoSQLServerDataSource implements NoSQLDataSource  {}

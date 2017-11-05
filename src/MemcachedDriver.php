@@ -8,6 +8,7 @@ require_once("NoSQLServer.php");
  * Defines memcached implementation of nosql operations.
  */
 class MemcachedDriver implements NoSQLDriver, NoSQLServer {
+	const PERSISTENT_ID = "pid";
 	/**
 	 * @var Memcached
 	 */
@@ -15,12 +16,21 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 
 	public function connect(NoSQLDataSource $dataSource) {
 		if(!$dataSource instanceof MemcachedDataSource) throw new NoSQLConnectionException("Invalid data source type");
-		$memcache = new Memcached();
+		
 		$servers = $dataSource->getServers();
 		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
-		foreach($servers as $host=>$port) {
-			$memcache->addServer($host, $port);
-		}		 
+		
+		$memcache = ($dataSource->isPersistent()?new Memcached(self::PERSISTENT_ID):new Memcached());
+		$memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+		if($dataSource->getTimeout()) {
+			$memcached->setOption(Memcached::OPT_RECV_TIMEOUT, $dataSource->getTimeout());
+			$memcached->setOption(Memcached::OPT_SEND_TIMEOUT, $dataSource->getTimeout());
+		}
+		if(!$dataSource->isPersistent() || !count($memcached->getServerList())) {
+			foreach($servers as $host=>$port) {
+				$memcache->addServer($host, $port);
+			}	
+		}	 
 		$this->objConnection = $memcache;
 	}
 	
