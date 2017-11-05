@@ -5,4 +5,8 @@ require_once("NoSQLServerDataSource.php");
 /**
  * Encapsulates a data source to use for memcached connections via memcached driver.
  */
-class MemcachedDataSource extends NoSQLServerDataSource implements NoSQLDataSource  {}
+class MemcachedDataSource extends NoSQLServerDataSource implements NoSQLDataSource  {
+	protected function getDefaultPort(){
+		return 11211;
+	}
+}

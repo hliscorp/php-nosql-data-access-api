@@ -5,4 +5,8 @@ require_once("NoSQLServerDataSource.php");
 /**
  * Encapsulates a data source to use for redis connections.
  */
-class RedisDataSource extends NoSQLServerDataSource implements NoSQLDataSource {}
+class RedisDataSource extends NoSQLServerDataSource implements NoSQLDataSource {
+	protected function getDefaultPort(){
+		return 6379;
+	}
+}
