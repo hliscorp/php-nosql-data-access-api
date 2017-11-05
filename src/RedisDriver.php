@@ -1,5 +1,8 @@
 <?php
+require_once("exceptions/NoSQLConnectionException.php");
 require_once("RedisDataSource.php");
+require_once("NoSQLDriver.php");
+require_once("NoSQLServer.php");
 
 /**
  * Defines redis implementation of nosql operations.
@@ -87,7 +90,8 @@ class RedisDriver implements NoSQLDriver, NoSQLServer {
 		} else {
 			$result = $this->objConnection->incrBy($key, $offset);
 		}
-		if($result===FALSE) {
+		if($result===FALSE) {	
+			// driver automatically creates not found key as "0"
 			throw new OperationFailedException($this->objConnection->getLastError());
 		}
 		return $result;
@@ -100,7 +104,8 @@ class RedisDriver implements NoSQLDriver, NoSQLServer {
 		} else {
 			$result = $this->objConnection->decrBy($key, $offset);
 		}
-		if($result===FALSE) {	// driver automatically creates not found key as "0"
+		if($result===FALSE) {
+			// driver automatically creates not found key as "-1"
 			throw new OperationFailedException($this->objConnection->getLastError());
 		}
 		return $result;
@@ -108,7 +113,7 @@ class RedisDriver implements NoSQLDriver, NoSQLServer {
 	
 	public function flush() {
 		$result = $this->objConnection->flushAll();
-		if(!$result) {	// driver automatically creates not found key as "-1"
+		if(!$result) {
 			throw new OperationFailedException($this->objConnection->getLastError());
 		}
 	}

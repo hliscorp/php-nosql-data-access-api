@@ -1,5 +1,8 @@
 <?php
+require_once("exceptions/NoSQLConnectionException.php");
 require_once("CouchbaseDataSource.php");
+require_once("NoSQLDriver.php");
+require_once("NoSQLServer.php");
 
 /**
  * Defines couchbase implementation of nosql operations.
@@ -11,15 +14,22 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 	private $objBucket;
 
 	public function connect(NoSQLDataSource $dataSource) {
-		if(!$dataSource instanceof CouchbaseDataSource) throw new NoSQLConnectionException("Invalid data source type");
-		if(!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || $dataSource->getPassword()) throw new NoSQLConnectionException("Insufficient settings");
+		if(!$dataSource instanceof CouchbaseDataSource) {
+			throw new NoSQLConnectionException("Invalid data source type");
+		}
+		if(!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) throw new NoSQLConnectionException("Insufficient settings");
 		
 		$authenticator = new \Couchbase\PasswordAuthenticator();
 		$authenticator->username($dataSource->getUserName())->password($dataSource->getPassword());
 		
 		$cluster = new CouchbaseCluster("couchbase://".$dataSource->getHost());
 		$cluster->authenticate($authenticator);
-		$this->objBucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
+		
+		if($dataSource->getBucketPassword()) {
+			$this->objBucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
+		} else {
+			$this->objBucket = $cluster->openBucket($dataSource->getBucketName());
+		}
 	}
 	
 	public function disconnect() {

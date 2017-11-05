@@ -1,5 +1,7 @@
 <?php
 require_once("APCDataSource.php");
+require_once("NoSQLDriver.php");
+
 /**
  * Defines APC implementation of nosql operations.
  */
@@ -63,9 +65,6 @@ class APCDriver implements NoSQLDriver {
 	}
 	
 	public function flush() {
-		$result = apc_clear_cache();
-		if(!$result) {
-			throw new OperationFailedException();
-		}
+		apc_clear_cache(); // returns true always
 	}
 }

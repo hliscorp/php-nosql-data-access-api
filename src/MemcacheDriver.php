@@ -1,5 +1,8 @@
 <?php
+require_once("exceptions/NoSQLConnectionException.php");
 require_once("MemcacheDataSource.php");
+require_once("NoSQLDriver.php");
+require_once("NoSQLServer.php");
 
 /**
  * Defines memcache implementation of nosql operations.

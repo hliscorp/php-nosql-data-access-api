@@ -1,5 +1,8 @@
 <?php
+require_once("exceptions/NoSQLConnectionException.php");
 require_once("MemcachedDataSource.php");
+require_once("NoSQLDriver.php");
+require_once("NoSQLServer.php");
 
 /**
  * Defines memcached implementation of nosql operations.
@@ -64,19 +67,27 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 	}
 
 	public function increment($key, $offset = 1) {
-		$result = $this->objConnection->increment($key, $offset); // driver automatically creates not found key as "0"
+		$result = $this->objConnection->increment($key, $offset);
 		if($result===FALSE) {
 			$resultCode = $this->objConnection->getResultCode();
-			throw new OperationFailedException((string) $resultCode);
+			if(Memcached::RES_NOTFOUND == $resultCode) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException((string) $resultCode);
+			}
 		}
 		return $result;
 	}
 
 	public function decrement($key, $offset = 1) {
-		$result = $this->objConnection->decrement($key, $offset); // driver automatically creates not found key as "0"
+		$result = $this->objConnection->decrement($key, $offset);
 		if($result===FALSE) {
 			$resultCode = $this->objConnection->getResultCode();
-			throw new OperationFailedException((string) $resultCode);
+			if(Memcached::RES_NOTFOUND == $resultCode) {
+				throw new KeyNotFoundException($key);
+			} else {
+				throw new OperationFailedException((string) $resultCode);
+			}
 		}
 		return $result;
 	}

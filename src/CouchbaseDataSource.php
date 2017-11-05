@@ -1,8 +1,10 @@
 <?php
+require_once("NoSQLDataSource.php");
+
 /**
  * Encapsulates couchbase server connection & bucket data.
 */
-class CouchbaseDataSource extends NoSQLDataSource  {
+class CouchbaseDataSource implements NoSQLDataSource  {
 	private $host;
 	
 	private $userName;
@@ -16,7 +18,7 @@ class CouchbaseDataSource extends NoSQLDataSource  {
 	}
 		
 	public function getHost() {
-		return $this->$host;
+		return $this->host;
 	}
 	
 	public function setAuthenticationInfo($strUsername, $strPassword) {
@@ -32,7 +34,7 @@ class CouchbaseDataSource extends NoSQLDataSource  {
 		return $this->password;
 	}
 	
-	public function setBucketInfo($strUsername, $strPassword) {
+	public function setBucketInfo($bucketName, $bucketPassword="") {
 		$this->bucketName = $bucketName;
 		$this->bucketPassword = $bucketPassword;
 	}

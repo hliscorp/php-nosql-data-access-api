@@ -1,8 +1,10 @@
 <?php
+require_once("NoSQLDataSource.php");
+
 /**
  * Encapsulates a data source to use for redis connections.
  */
-class RedisDataSource extends NoSQLDataSource {
+class RedisDataSource implements NoSQLDataSource {
 	private $servers = array();
 	
 	private $timeout;

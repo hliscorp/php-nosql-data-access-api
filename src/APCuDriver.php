@@ -1,5 +1,7 @@
 <?php
 require_once("APCuDataSource.php");
+require_once("NoSQLDriver.php");
+
 /**
  * Defines APCu implementation of nosql operations.
 */
@@ -41,11 +43,7 @@ class APCuDriver implements NoSQLDriver {
 	public function increment($key, $offset = 1) {
 		$result = apcu_inc($key, $offset);
 		if($result===FALSE) {
-			if(!apcu_exists($key)) {
-				throw new KeyNotFoundException($key);
-			} else {
-				throw new OperationFailedException();
-			}
+			throw new OperationFailedException();
 		}
 		return $result;
 	}
@@ -53,19 +51,12 @@ class APCuDriver implements NoSQLDriver {
 	public function decrement($key, $offset = 1) {
 		$result = apcu_dec($key, $offset);
 		if($result===FALSE) {
-			if(!apcu_exists($key)) {
-				throw new KeyNotFoundException($key);
-			} else {
-				throw new OperationFailedException();
-			}
+			throw new OperationFailedException();
 		}
 		return $result;
 	}
 	
 	public function flush() {
-		$result = apcu_clear_cache();
-		if(!$result) {
-			throw new OperationFailedException();
-		}
+		apcu_clear_cache(); // returns true always
 	}
 }

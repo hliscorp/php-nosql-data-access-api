@@ -1,4 +1,7 @@
 <?php
+require_once("exceptions/KeyNotFoundException.php");
+require_once("exceptions/OperationFailedException.php");
+
 /**
  * Defines common operations in a nosql database
  */
@@ -64,6 +67,7 @@ interface NoSQLDriver {
 	
 	/**
 	 * Flushes DB of all keys.
+	 * @throws OperationFailedException If operation didn't succeed.
 	 */
 	public function flush();
 }
