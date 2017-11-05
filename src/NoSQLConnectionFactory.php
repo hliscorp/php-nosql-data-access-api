@@ -6,13 +6,13 @@ final class NoSQLConnectionFactory {
 	/**
 	 * Stores open connections.
 	 * 
-	 * @var array
+	 * @var array[string:NoSQLServer]
 	 */
 	private static $instances;
 	
 	/**
 	 * Stores registered data sources.
-	 * @var array
+	 * @var array[string:NoSQLDataSource]
 	 */
 	private static $dataSources;
 	
