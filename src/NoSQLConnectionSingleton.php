@@ -5,7 +5,7 @@
 final class NoSQLConnectionSingleton
 {
     /**
-     * @var DataSource
+     * @var NoSQLDataSource
      */
     private static $dataSource = null;
     
