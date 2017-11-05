@@ -19,7 +19,7 @@ class MemcacheDriver implements NoSQLDriver, NoSQLServer {
 		$servers = $dataSource->getServers();
 		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
 		foreach($servers as $host=>$port) {
-			$memcache->addServer($host, $port);
+			$memcache->addServer($host, $port, $dataSource->isPersistent(), 0, ($dataSource->getTimeout()?$dataSource->getTimeout():1));
 		}		 
 		$this->objConnection = $memcache;
 	}
