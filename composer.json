@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Abstracts communication with NoSQL servers/solutions via drivers",
     "keywords": ["nosql","driver","redis","couchbase","memcache","memcached","apc","apcu"],
-    "homepage": "https://github.com/aherne/php-nosql-data-access-api",
+    "homepage": "http://www.lucinda-framework.com/nosql-data-access-api",
     "license": "MIT",
     "authors": [
         {
