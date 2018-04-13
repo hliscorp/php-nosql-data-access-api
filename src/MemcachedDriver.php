@@ -19,8 +19,8 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 		
 		$servers = $dataSource->getServers();
 		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
-		
-		$memcache = ($dataSource->isPersistent()?new Memcached(self::PERSISTENT_ID):new Memcached());
+
+        $memcached = ($dataSource->isPersistent()?new Memcached(self::PERSISTENT_ID):new Memcached());
 		$memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
 		if($dataSource->getTimeout()) {
 			$memcached->setOption(Memcached::OPT_RECV_TIMEOUT, $dataSource->getTimeout());
@@ -28,10 +28,10 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 		}
 		if(!$dataSource->isPersistent() || !count($memcached->getServerList())) {
 			foreach($servers as $host=>$port) {
-				$memcache->addServer($host, $port);
+                $memcached->addServer($host, $port);
 			}	
 		}	 
-		$this->objConnection = $memcache;
+		$this->objConnection = $memcached;
 	}
 	
 	public function disconnect() {
