@@ -2,7 +2,7 @@
 namespace Lucinda\NoSQL;
 
 /**
- * Defines operations in connecting to single NoSQL server.
+ * Defines connection operations to a NoSQL server
  */
 interface Server {
 	/**

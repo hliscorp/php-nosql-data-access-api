@@ -5,7 +5,7 @@ require_once("exceptions/KeyNotFoundException.php");
 require_once("exceptions/OperationFailedException.php");
 
 /**
- * Defines common operations in a nosql database
+ * Defines data manipulation operations in a nosql database
  */
 interface Driver {	
 	/**
