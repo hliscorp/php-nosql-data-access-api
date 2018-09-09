@@ -1,9 +1,9 @@
 <?php
-require_once("src/NoSQLDataSource.php");
-require_once("src/NoSQLDriver.php");
-require_once("src/NoSQLServer.php");
-require_once("src/NoSQLConnectionFactory.php");
-require_once("src/NoSQLConnectionSingleton.php");
-require_once("src/exceptions/NoSQLConnectionException.php");
+require_once("src/DataSource.php");
+require_once("src/Driver.php");
+require_once("src/Server.php");
+require_once("src/ConnectionFactory.php");
+require_once("src/ConnectionSingleton.php");
+require_once("src/exceptions/ConnectionException.php");
 require_once("src/exceptions/KeyNotFoundException.php");
 require_once("src/exceptions/OperationFailedException.php");

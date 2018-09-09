@@ -1,8 +1,10 @@
 <?php
+namespace Lucinda\NoSQL;
+
 /**
  * Encapsulates operations to use on a NoSQL data source that requires a third party server installed
  */
-abstract class NoSQLServerDataSource {
+abstract class ServerDataSource {
 	private $servers = array();
 	private $timeout;
 	private $persistent = false;

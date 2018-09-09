@@ -1,7 +1,9 @@
 <?php
-require_once("NoSQLDataSource.php");
+namespace Lucinda\NoSQL;
+
+require_once("DataSource.php");
 
 /**
  * Encapsulates a data source that does nothign but identify provider.
  */
-class APCuDataSource implements NoSQLDataSource {}
+class APCuDataSource implements DataSource {}

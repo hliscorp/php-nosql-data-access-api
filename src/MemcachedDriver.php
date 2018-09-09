@@ -1,30 +1,32 @@
 <?php
-require_once("exceptions/NoSQLConnectionException.php");
+namespace Lucinda\NoSQL;
+
+require_once("exceptions/ConnectionException.php");
 require_once("MemcachedDataSource.php");
-require_once("NoSQLDriver.php");
-require_once("NoSQLServer.php");
+require_once("Driver.php");
+require_once("Server.php");
 
 /**
  * Defines memcached implementation of nosql operations.
  */
-class MemcachedDriver implements NoSQLDriver, NoSQLServer {
+class MemcachedDriver implements Driver, Server {
 	const PERSISTENT_ID = "pid";
 	/**
-	 * @var Memcached
+	 * @var \Memcached
 	 */
 	private $objConnection;
 
-	public function connect(NoSQLDataSource $dataSource) {
-		if(!$dataSource instanceof MemcachedDataSource) throw new NoSQLConnectionException("Invalid data source type");
+	public function connect(DataSource $dataSource) {
+		if(!$dataSource instanceof MemcachedDataSource) throw new ConnectionException("Invalid data source type");
 		
 		$servers = $dataSource->getServers();
-		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
+		if(empty($servers)) throw new ConnectionException("No servers are set!");
 
-        $memcached = ($dataSource->isPersistent()?new Memcached(self::PERSISTENT_ID):new Memcached());
-		$memcached->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+        $memcached = ($dataSource->isPersistent()?new \Memcached(self::PERSISTENT_ID):new \Memcached());
+		$memcached->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
 		if($dataSource->getTimeout()) {
-			$memcached->setOption(Memcached::OPT_RECV_TIMEOUT, $dataSource->getTimeout());
-			$memcached->setOption(Memcached::OPT_SEND_TIMEOUT, $dataSource->getTimeout());
+			$memcached->setOption(\Memcached::OPT_RECV_TIMEOUT, $dataSource->getTimeout());
+			$memcached->setOption(\Memcached::OPT_SEND_TIMEOUT, $dataSource->getTimeout());
 		}
 		if(!$dataSource->isPersistent() || !count($memcached->getServerList())) {
 			foreach($servers as $host=>$port) {
@@ -50,7 +52,7 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 		$result = $this->objConnection->get($key);
 		if($result===FALSE) {
 			$resultCode = $this->objConnection->getResultCode();
-			if(Memcached::RES_NOTFOUND == $resultCode) {
+			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
 				throw new OperationFailedException((string) $resultCode);
@@ -61,14 +63,14 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 	
 	public function contains($key) {
 		$this->objConnection->get($key);
-		return (Memcached::RES_NOTFOUND == $this->objConnection->getResultCode()?false:true);
+		return (\Memcached::RES_NOTFOUND == $this->objConnection->getResultCode()?false:true);
 	}
 
 	public function delete($key) {
 		$result = $this->objConnection->delete($key);
 		if(!$result) {
 			$resultCode = $this->objConnection->getResultCode();
-			if(Memcached::RES_NOTFOUND == $resultCode) {
+			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
 				throw new OperationFailedException((string) $resultCode);
@@ -80,7 +82,7 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 		$result = $this->objConnection->increment($key, $offset);
 		if($result===FALSE) {
 			$resultCode = $this->objConnection->getResultCode();
-			if(Memcached::RES_NOTFOUND == $resultCode) {
+			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
 				throw new OperationFailedException((string) $resultCode);
@@ -93,7 +95,7 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 		$result = $this->objConnection->decrement($key, $offset);
 		if($result===FALSE) {
 			$resultCode = $this->objConnection->getResultCode();
-			if(Memcached::RES_NOTFOUND == $resultCode) {
+			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
 				throw new OperationFailedException((string) $resultCode);
@@ -113,7 +115,7 @@ class MemcachedDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * Gets a pointer to native wrapped object for advanced operations.
 	 *
-	 * @return Memcached
+	 * @return \Memcached
 	 */
 	public function getDriver() {
 		return $this->objConnection;

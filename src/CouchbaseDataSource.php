@@ -1,10 +1,12 @@
 <?php
-require_once("NoSQLDataSource.php");
+namespace Lucinda\NoSQL;
+
+require_once("DataSource.php");
 
 /**
  * Encapsulates couchbase server connection & bucket data.
 */
-class CouchbaseDataSource implements NoSQLDataSource  {
+class CouchbaseDataSource implements DataSource  {
 	private $host;
 	
 	private $userName;

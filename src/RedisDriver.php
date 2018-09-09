@@ -1,35 +1,37 @@
 <?php
-require_once("exceptions/NoSQLConnectionException.php");
+namespace Lucinda\NoSQL;
+
+require_once("exceptions/ConnectionException.php");
 require_once("RedisDataSource.php");
-require_once("NoSQLDriver.php");
-require_once("NoSQLServer.php");
+require_once("Driver.php");
+require_once("Server.php");
 
 /**
  * Defines redis implementation of nosql operations.
  *
  * DOCS: https://github.com/nicolasff/phpredis/blob/master/README.markdown#connect-open
  */
-class RedisDriver implements NoSQLDriver, NoSQLServer {
+class RedisDriver implements Driver, Server {
 	/**
-	 * @var Redis
+	 * @var \Redis
 	 */
 	private $objConnection;
 
-	public function connect(NoSQLDataSource $dataSource) {
-		if(!$dataSource instanceof RedisDataSource) throw new NoSQLConnectionException("Invalid data source type");
+	public function connect(DataSource $dataSource) {
+		if(!$dataSource instanceof RedisDataSource) throw new ConnectionException("Invalid data source type");
 		$servers = $dataSource->getServers();
-		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
+		if(empty($servers)) throw new ConnectionException("No servers are set!");
 		$objRedis = null;
 		if(sizeof($servers)>1) {
 			$serverList = array();
 			foreach($servers as $name=>$port) {
 				$serverList[] = $name.":".$port;
 			}
-			$objRedis = new RedisCluster(NULL, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
+			$objRedis = new \RedisCluster(NULL, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
 		} else {
 			$port = reset($servers);
 			$host = key($servers);
-			$objRedis = new Redis();
+			$objRedis = new \Redis();
 			if($dataSource->isPersistent()) {
 				$objRedis->pconnect($host, $port, $dataSource->getTimeout());
 			} else {
@@ -122,7 +124,7 @@ class RedisDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * Gets a pointer to native wrapped object for advanced operations.
 	 *
-	 * @return Redis|RedisCluster
+	 * @return \Redis|\RedisCluster
 	 */
 	public function getDriver() {
 		return $this->objConnection;

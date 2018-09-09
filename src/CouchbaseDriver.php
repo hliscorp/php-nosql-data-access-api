@@ -1,28 +1,30 @@
 <?php
-require_once("exceptions/NoSQLConnectionException.php");
+namespace Lucinda\NoSQL;
+
+require_once("exceptions/ConnectionException.php");
 require_once("CouchbaseDataSource.php");
-require_once("NoSQLDriver.php");
-require_once("NoSQLServer.php");
+require_once("Driver.php");
+require_once("Server.php");
 
 /**
  * Defines couchbase implementation of nosql operations.
  */
-class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
+class CouchbaseDriver implements Driver, Server {
 	/**
-	 * @var CouchbaseBucket
+	 * @var \CouchbaseBucket
 	 */
 	private $objBucket;
 
-	public function connect(NoSQLDataSource $dataSource) {
+	public function connect(DataSource $dataSource) {
 		if(!$dataSource instanceof CouchbaseDataSource) {
-			throw new NoSQLConnectionException("Invalid data source type");
+			throw new ConnectionException("Invalid data source type");
 		}
-		if(!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) throw new NoSQLConnectionException("Insufficient settings");
+		if(!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) throw new ConnectionException("Insufficient settings");
 		
 		$authenticator = new \Couchbase\PasswordAuthenticator();
 		$authenticator->username($dataSource->getUserName())->password($dataSource->getPassword());
 		
-		$cluster = new CouchbaseCluster("couchbase://".$dataSource->getHost());
+		$cluster = new \CouchbaseCluster("couchbase://".$dataSource->getHost());
 		$cluster->authenticate($authenticator);
 		
 		if($dataSource->getBucketPassword()) {
@@ -41,7 +43,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 		if($expiration) $flags["expiry"] = $expiration;
 		try {
 			$this->objBucket->upsert($key, $value, $flags);
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			throw new OperationFailedException($e->getMessage());
 		}
 	}
@@ -50,7 +52,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 		try {
 			$result = $this->objBucket->get($key);
 			return $result->value;
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -63,7 +65,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 		try {
 			$this->objBucket->get($key);
 			return true;
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			return false;
 		}
 	}
@@ -71,7 +73,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 	public function delete($key) {
 		try {
 			$this->objBucket->remove($key);
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -84,7 +86,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 		try {
 			$result = $this->objBucket->counter($key, $offset);
 			return $result->value;
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -97,7 +99,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 		try {
 			$result = $this->objBucket->counter($key, -$offset);
 			return $result->value;
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -109,7 +111,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 	public function flush() {
 		try {
 			$this->objBucket->manager()->flush();
-		} catch(CouchbaseException $e) {
+		} catch(\CouchbaseException $e) {
 			throw new OperationFailedException($e->getMessage());
 		}
 	}
@@ -117,7 +119,7 @@ class CouchbaseDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * Gets a pointer to native wrapped object for advanced operations.
 	 * 
-	 * @return CouchbaseBucket
+	 * @return \CouchbaseBucket
 	 */
 	public function getDriver() {
 		return $this->objBucket;

@@ -1,11 +1,13 @@
 <?php
+namespace Lucinda\NoSQL;
+
 require_once("APCDataSource.php");
-require_once("NoSQLDriver.php");
+require_once("Driver.php");
 
 /**
  * Defines APC implementation of nosql operations.
  */
-class APCDriver implements NoSQLDriver {
+class APCDriver implements Driver {
 	public function set($key, $value, $expiration=0) {
 		$result = apc_store($key, $value, $expiration);
 		if(!$result) {

@@ -1,14 +1,16 @@
 <?php
+namespace Lucinda\NoSQL;
+
 /**
  * Defines operations in connecting to single NoSQL server.
  */
-interface NoSQLServer {
+interface Server {
 	/**
 	 * Connects to nosql provider
 	 *
-	 * @param NoSQLDataSource $dataSource
+	 * @param DataSource $dataSource
 	 */
-	public function connect(NoSQLDataSource $dataSource);
+	public function connect(DataSource $dataSource);
 	
 	/**
 	 * Disconnects from nosql provider

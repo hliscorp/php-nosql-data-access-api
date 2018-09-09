@@ -1,23 +1,25 @@
 <?php
-require_once("exceptions/NoSQLConnectionException.php");
+namespace Lucinda\NoSQL;
+
+require_once("exceptions/ConnectionException.php");
 require_once("MemcacheDataSource.php");
-require_once("NoSQLDriver.php");
-require_once("NoSQLServer.php");
+require_once("Driver.php");
+require_once("Server.php");
 
 /**
  * Defines memcache implementation of nosql operations.
  */
-class MemcacheDriver implements NoSQLDriver, NoSQLServer {
+class MemcacheDriver implements Driver, Server {
 	/**
-	 * @var Memcache
+	 * @var \Memcache
 	 */
 	private $objConnection;
 
-	public function connect(NoSQLDataSource $dataSource) {
-		if(!$dataSource instanceof MemcacheDataSource) throw new NoSQLConnectionException("Invalid data source type");
-		$memcache = new Memcache();
+	public function connect(DataSource $dataSource) {
+		if(!$dataSource instanceof MemcacheDataSource) throw new ConnectionException("Invalid data source type");
+		$memcache = new \Memcache();
 		$servers = $dataSource->getServers();
-		if(empty($servers)) throw new NoSQLConnectionException("No servers are set!");
+		if(empty($servers)) throw new ConnectionException("No servers are set!");
 		foreach($servers as $host=>$port) {
 			$memcache->addServer($host, $port, $dataSource->isPersistent(), 1, ($dataSource->getTimeout()?$dataSource->getTimeout():1));
 		}		 
@@ -81,7 +83,7 @@ class MemcacheDriver implements NoSQLDriver, NoSQLServer {
 	/**
 	 * Gets a pointer to native wrapped object for advanced operations.
 	 *
-	 * @return Memcache
+	 * @return \Memcache
 	 */
 	public function getDriver() {
 		return $this->objConnection;

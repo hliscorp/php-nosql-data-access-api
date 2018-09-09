@@ -1,11 +1,13 @@
 <?php
+namespace Lucinda\NoSQL;
+
 require_once("APCuDataSource.php");
-require_once("NoSQLDriver.php");
+require_once("Driver.php");
 
 /**
  * Defines APCu implementation of nosql operations.
 */
-class APCuDriver implements NoSQLDriver {
+class APCuDriver implements Driver {
 	public function set($key, $value, $expiration=0) {
 		$result = apcu_store($key, $value, $expiration);
 		if(!$result) {

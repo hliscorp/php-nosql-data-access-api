@@ -1,11 +1,13 @@
 <?php
-require_once("NoSQLDataSource.php");
-require_once("NoSQLServerDataSource.php");
+namespace Lucinda\NoSQL;
+
+require_once("DataSource.php");
+require_once("ServerDataSource.php");
 
 /**
  * Encapsulates a data source to use for redis connections.
  */
-class RedisDataSource extends NoSQLServerDataSource implements NoSQLDataSource {
+class RedisDataSource extends ServerDataSource implements DataSource {
 	protected function getDefaultPort(){
 		return 6379;
 	}

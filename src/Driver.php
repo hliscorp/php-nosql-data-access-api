@@ -1,11 +1,13 @@
 <?php
+namespace Lucinda\NoSQL;
+
 require_once("exceptions/KeyNotFoundException.php");
 require_once("exceptions/OperationFailedException.php");
 
 /**
  * Defines common operations in a nosql database
  */
-interface NoSQLDriver {	
+interface Driver {	
 	/**
 	 * Sets value to store that will be accessible by key.
 	 * 
