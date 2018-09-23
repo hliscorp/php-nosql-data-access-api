@@ -13,7 +13,7 @@ class CouchbaseDriver implements Driver, Server {
 	/**
 	 * @var \CouchbaseBucket
 	 */
-	private $objBucket;
+	private $bucket;
 
 	public function connect(DataSource $dataSource) {
 		if(!$dataSource instanceof CouchbaseDataSource) {
@@ -28,9 +28,9 @@ class CouchbaseDriver implements Driver, Server {
 		$cluster->authenticate($authenticator);
 		
 		if($dataSource->getBucketPassword()) {
-			$this->objBucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
+			$this->bucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
 		} else {
-			$this->objBucket = $cluster->openBucket($dataSource->getBucketName());
+			$this->bucket = $cluster->openBucket($dataSource->getBucketName());
 		}
 	}
 	
@@ -42,7 +42,7 @@ class CouchbaseDriver implements Driver, Server {
 		$flags = array();
 		if($expiration) $flags["expiry"] = $expiration;
 		try {
-			$this->objBucket->upsert($key, $value, $flags);
+			$this->bucket->upsert($key, $value, $flags);
 		} catch(\CouchbaseException $e) {
 			throw new OperationFailedException($e->getMessage());
 		}
@@ -50,7 +50,7 @@ class CouchbaseDriver implements Driver, Server {
 
 	public function get($key) {
 		try {
-			$result = $this->objBucket->get($key);
+			$result = $this->bucket->get($key);
 			return $result->value;
 		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
@@ -63,7 +63,7 @@ class CouchbaseDriver implements Driver, Server {
 	
 	public function contains($key) {
 		try {
-			$this->objBucket->get($key);
+			$this->bucket->get($key);
 			return true;
 		} catch(\CouchbaseException $e) {
 			return false;
@@ -72,7 +72,7 @@ class CouchbaseDriver implements Driver, Server {
 
 	public function delete($key) {
 		try {
-			$this->objBucket->remove($key);
+			$this->bucket->remove($key);
 		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
 				throw new KeyNotFoundException($key);
@@ -84,7 +84,7 @@ class CouchbaseDriver implements Driver, Server {
 
 	public function increment($key, $offset = 1) {
 		try {
-			$result = $this->objBucket->counter($key, $offset);
+			$result = $this->bucket->counter($key, $offset);
 			return $result->value;
 		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
@@ -97,7 +97,7 @@ class CouchbaseDriver implements Driver, Server {
 
 	public function decrement($key, $offset = 1) {
 		try {
-			$result = $this->objBucket->counter($key, -$offset);
+			$result = $this->bucket->counter($key, -$offset);
 			return $result->value;
 		} catch(\CouchbaseException $e) {
 			if(strpos($e->getMessage(),"LCB_KEY_ENOENT")!==false) {
@@ -110,7 +110,7 @@ class CouchbaseDriver implements Driver, Server {
 	
 	public function flush() {
 		try {
-			$this->objBucket->manager()->flush();
+			$this->bucket->manager()->flush();
 		} catch(\CouchbaseException $e) {
 			throw new OperationFailedException($e->getMessage());
 		}
@@ -122,6 +122,6 @@ class CouchbaseDriver implements Driver, Server {
 	 * @return \CouchbaseBucket
 	 */
 	public function getDriver() {
-		return $this->objBucket;
+		return $this->bucket;
 	}
 }

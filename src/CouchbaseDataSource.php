@@ -18,10 +18,10 @@ class CouchbaseDataSource implements DataSource  {
 	/**
 	 * Sets Couchbase cluster host name (or list of hosts separated by commas)
 	 * 
-	 * @param string $strHost
+	 * @param string $host
 	 */
-	public function setHost($strHost) {
-		$this->host = $strHost;
+	public function setHost($host) {
+		$this->host = $host;
 	}
 		
 	/**
@@ -36,12 +36,12 @@ class CouchbaseDataSource implements DataSource  {
 	/**
 	 * Sets credentials required by connection to server.
 	 * 
-	 * @param string $strUsername
-	 * @param string $strPassword
+	 * @param string $username
+	 * @param string $password
 	 */
-	public function setAuthenticationInfo($strUsername, $strPassword) {
-		$this->userName = $strUsername;
-		$this->password = $strPassword;
+	public function setAuthenticationInfo($username, $password) {
+		$this->userName = $username;
+		$this->password = $password;
 	}
 	
 	/**

@@ -13,7 +13,7 @@ class MemcacheDriver implements Driver, Server {
 	/**
 	 * @var \Memcache
 	 */
-	private $objConnection;
+	private $connection;
 
 	public function connect(DataSource $dataSource) {
 		if(!$dataSource instanceof MemcacheDataSource) throw new ConnectionException("Invalid data source type");
@@ -23,22 +23,22 @@ class MemcacheDriver implements Driver, Server {
 		foreach($servers as $host=>$port) {
 			$memcache->addServer($host, $port, $dataSource->isPersistent(), 1, ($dataSource->getTimeout()?$dataSource->getTimeout():1));
 		}		 
-		$this->objConnection = $memcache;
+		$this->connection = $memcache;
 	}
 	
 	public function disconnect() {
-		$this->objConnection->close();
+		$this->connection->close();
 	}
 
 	public function set($key, $value, $expiration=0) {
-		$result = $this->objConnection->set($key, $value, 0, $expiration);
+		$result = $this->connection->set($key, $value, 0, $expiration);
 		if(!$result) {
 			throw new OperationFailedException();
 		}
 	}
 
 	public function get($key) {
-		$result = $this->objConnection->get($key); // driver makes it impossible to distinguish between false and failure
+		$result = $this->connection->get($key); // driver makes it impossible to distinguish between false and failure
 		if($result===false) {
 			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
 		}
@@ -46,18 +46,18 @@ class MemcacheDriver implements Driver, Server {
 	}
 	
 	public function contains($key) {
-		return ($this->objConnection->get($key)!==false?true:false);
+		return ($this->connection->get($key)!==false?true:false);
 	}
 
 	public function delete($key) {
-		$result = $this->objConnection->delete($key);
+		$result = $this->connection->delete($key);
 		if(!$result) {
 			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
 		}
 	}
 
 	public function increment($key, $offset = 1) {
-		$result = $this->objConnection->increment($key, $offset);
+		$result = $this->connection->increment($key, $offset);
 		if($result===false) {
 			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
 		}
@@ -65,7 +65,7 @@ class MemcacheDriver implements Driver, Server {
 	}
 
 	public function decrement($key, $offset = 1) {
-		$result = $this->objConnection->decrement($key, $offset);
+		$result = $this->connection->decrement($key, $offset);
 		if($result===false) {
 			throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
 		}
@@ -73,7 +73,7 @@ class MemcacheDriver implements Driver, Server {
 	}
 	
 	public function flush() {
-		$this->objConnection->flush();
+		$this->connection->flush();
 		if(!$result) {
 			throw new OperationFailedException();
 		}
@@ -86,6 +86,6 @@ class MemcacheDriver implements Driver, Server {
 	 * @return \Memcache
 	 */
 	public function getDriver() {
-		return $this->objConnection;
+		return $this->connection;
 	}
 }

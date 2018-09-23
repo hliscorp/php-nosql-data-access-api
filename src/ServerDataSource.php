@@ -12,12 +12,12 @@ abstract class ServerDataSource {
 	/**
 	 * Adds server to connection pool.
 	 * 
-	 * @param string $strHost Value of server host.
-	 * @param integer $intPort (optional) Value of server port. If not set, it will be replaced by default port specific to no-sql vendor.
+	 * @param string $host Value of server host.
+	 * @param integer $port (optional) Value of server port. If not set, it will be replaced by default port specific to no-sql vendor.
 	 */
-	public function addServer($strHost, $intPort = 0) {
-		if(!$intPort) $intPort = $this->getDefaultPort();
-		$this->servers[$strHost] = $intPort;
+	public function addServer($host, $port = 0) {
+		if(!$port) $port = $this->getDefaultPort();
+		$this->servers[$host] = $port;
 	}
 	
 	/**
@@ -32,10 +32,10 @@ abstract class ServerDataSource {
 	/**
 	 * Sets operations timeout.
 	 * 
-	 * @param integer $intSeconds
+	 * @param integer $seconds
 	 */
-	public function setTimeout($intSeconds) {
-		$this->timeout = $intSeconds;
+	public function setTimeout($seconds) {
+		$this->timeout = $seconds;
 	}
 	
 	/**

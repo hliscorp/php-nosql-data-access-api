@@ -26,27 +26,27 @@ final class ConnectionFactory {
 	/**
 	 * Registers a data source object encapsulatings connection info based on unique server identifier.
 	 * 
-	 * @param string $strServerName Unique identifier of server you will be connecting to.
-	 * @param DataSource $objDataSource
+	 * @param string $serverName Unique identifier of server you will be connecting to.
+	 * @param DataSource $dataSource
 	 */
-	public static function setDataSource($strServerName, DataSource $objDataSource){
-		self::$dataSources[$strServerName] = $objDataSource;
+	public static function setDataSource($serverName, DataSource $dataSource){
+		self::$dataSources[$serverName] = $dataSource;
 	}
 	
 	/**
 	 * Opens connection to database server (if not already open) according to DataSource and 
 	 * returns an object of that connection to delegate operations to.
 	 * 
-	 * @param string $strServerName Unique identifier of server you will be connecting to.
+	 * @param string $serverName Unique identifier of server you will be connecting to.
 	 * @throws ConnectionException
 	 * @return Driver
 	 */
-	public static function getInstance($strServerName){
-        if(isset(self::$instances[$strServerName])) {
-            return self::$instances[$strServerName];
+	public static function getInstance($serverName){
+        if(isset(self::$instances[$serverName])) {
+            return self::$instances[$serverName];
         }
-        self::$instances[$strServerName] = new ConnectionFactory($strServerName);
-		return self::$instances[$strServerName];
+        self::$instances[$serverName] = new ConnectionFactory($serverName);
+		return self::$instances[$serverName];
 	}
 
 
@@ -55,13 +55,13 @@ final class ConnectionFactory {
 	 *
 	 * @throws ConnectionException
 	 */
-	private function __construct($strServerName) {
-		if(!isset(self::$dataSources[$strServerName])) throw new ConnectionException("Datasource not set for: ".$strServerName);
-		$className = str_replace("DataSource","Driver",get_class(self::$dataSources[$strServerName]));
+	private function __construct($serverName) {
+		if(!isset(self::$dataSources[$serverName])) throw new ConnectionException("Datasource not set for: ".$serverName);
+		$className = str_replace("DataSource","Driver",get_class(self::$dataSources[$serverName]));
 		if(!class_exists($className)) throw new ConnectionException("Class not found: ".$className);
 		$this->database_connection = new $className();
 		if($this->database_connection instanceof Server) {
-			$this->database_connection->connect(self::$dataSources[$strServerName]);
+			$this->database_connection->connect(self::$dataSources[$serverName]);
 		}
 	}
 	

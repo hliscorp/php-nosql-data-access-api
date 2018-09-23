@@ -14,7 +14,7 @@ class MemcachedDriver implements Driver, Server {
 	/**
 	 * @var \Memcached
 	 */
-	private $objConnection;
+	private $connection;
 
 	public function connect(DataSource $dataSource) {
 		if(!$dataSource instanceof MemcachedDataSource) throw new ConnectionException("Invalid data source type");
@@ -33,25 +33,25 @@ class MemcachedDriver implements Driver, Server {
                 $memcached->addServer($host, $port);
 			}	
 		}	 
-		$this->objConnection = $memcached;
+		$this->connection = $memcached;
 	}
 	
 	public function disconnect() {
-		$this->objConnection->quit();
+		$this->connection->quit();
 	}
 
 	public function set($key, $value, $expiration=0) {
-		$result = $this->objConnection->set($key, $value, $expiration);
+		$result = $this->connection->set($key, $value, $expiration);
 		if(!$result) {
-			$resultCode = $this->objConnection->getResultCode();
+			$resultCode = $this->connection->getResultCode();
 			throw new OperationFailedException((string) $resultCode);
 		}
 	}
 
 	public function get($key) {
-		$result = $this->objConnection->get($key);
+		$result = $this->connection->get($key);
 		if($result===FALSE) {
-			$resultCode = $this->objConnection->getResultCode();
+			$resultCode = $this->connection->getResultCode();
 			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -62,14 +62,14 @@ class MemcachedDriver implements Driver, Server {
 	}
 	
 	public function contains($key) {
-		$this->objConnection->get($key);
-		return (\Memcached::RES_NOTFOUND == $this->objConnection->getResultCode()?false:true);
+		$this->connection->get($key);
+		return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode()?false:true);
 	}
 
 	public function delete($key) {
-		$result = $this->objConnection->delete($key);
+		$result = $this->connection->delete($key);
 		if(!$result) {
-			$resultCode = $this->objConnection->getResultCode();
+			$resultCode = $this->connection->getResultCode();
 			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -79,9 +79,9 @@ class MemcachedDriver implements Driver, Server {
 	}
 
 	public function increment($key, $offset = 1) {
-		$result = $this->objConnection->increment($key, $offset);
+		$result = $this->connection->increment($key, $offset);
 		if($result===FALSE) {
-			$resultCode = $this->objConnection->getResultCode();
+			$resultCode = $this->connection->getResultCode();
 			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -92,9 +92,9 @@ class MemcachedDriver implements Driver, Server {
 	}
 
 	public function decrement($key, $offset = 1) {
-		$result = $this->objConnection->decrement($key, $offset);
+		$result = $this->connection->decrement($key, $offset);
 		if($result===FALSE) {
-			$resultCode = $this->objConnection->getResultCode();
+			$resultCode = $this->connection->getResultCode();
 			if(\Memcached::RES_NOTFOUND == $resultCode) {
 				throw new KeyNotFoundException($key);
 			} else {
@@ -105,9 +105,9 @@ class MemcachedDriver implements Driver, Server {
 	}
 	
 	public function flush() {
-		$result = $this->objConnection->flush();
+		$result = $this->connection->flush();
 		if(!$result) {
-			$resultCode = $this->objConnection->getResultCode();
+			$resultCode = $this->connection->getResultCode();
 			throw new OperationFailedException((string) $resultCode);
 		}
 	}
@@ -118,6 +118,6 @@ class MemcachedDriver implements Driver, Server {
 	 * @return \Memcached
 	 */
 	public function getDriver() {
-		return $this->objConnection;
+		return $this->connection;
 	}
 }

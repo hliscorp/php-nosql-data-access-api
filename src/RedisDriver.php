@@ -15,72 +15,72 @@ class RedisDriver implements Driver, Server {
 	/**
 	 * @var \Redis
 	 */
-	private $objConnection;
+	private $connection;
 
 	public function connect(DataSource $dataSource) {
 		if(!$dataSource instanceof RedisDataSource) throw new ConnectionException("Invalid data source type");
 		$servers = $dataSource->getServers();
 		if(empty($servers)) throw new ConnectionException("No servers are set!");
-		$objRedis = null;
+		$redis = null;
 		if(sizeof($servers)>1) {
 			$serverList = array();
 			foreach($servers as $name=>$port) {
 				$serverList[] = $name.":".$port;
 			}
-			$objRedis = new \RedisCluster(NULL, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
+			$redis = new \RedisCluster(NULL, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
 		} else {
 			$port = reset($servers);
 			$host = key($servers);
-			$objRedis = new \Redis();
+			$redis = new \Redis();
 			if($dataSource->isPersistent()) {
-				$objRedis->pconnect($host, $port, $dataSource->getTimeout());
+				$redis->pconnect($host, $port, $dataSource->getTimeout());
 			} else {
-				$objRedis->connect($host, $port, $dataSource->getTimeout());
+				$redis->connect($host, $port, $dataSource->getTimeout());
 			}
 		}
 		
-		$this->objConnection = $objRedis;
+		$this->connection = $redis;
 	}
 	
 	public function disconnect() {
-		$this->objConnection->close();
+		$this->connection->close();
 	}
 
 	public function set($key, $value, $expiration=0) {
 		$result = null;
 		if($expiration==0) {
-			$result = $this->objConnection->set($key, $value);
+			$result = $this->connection->set($key, $value);
 		} else {
-			$result = $this->objConnection->setex($key, $expiration, $value);
+			$result = $this->connection->setex($key, $expiration, $value);
 		}
 		if(!$result) {
-			throw new OperationFailedException($this->objConnection->getLastError());
+			throw new OperationFailedException($this->connection->getLastError());
 		}
 	}
 
 	public function get($key) {
-		$result = $this->objConnection->get($key);
+		$result = $this->connection->get($key);
 		if($result === false) {
-			if(!$this->objConnection->exists($key)) {
+			if(!$this->connection->exists($key)) {
 				throw new KeyNotFoundException($key);
 			} else {
-				throw new OperationFailedException($this->objConnection->getLastError());
+				throw new OperationFailedException($this->connection->getLastError());
 			}
 		}
 		return $result;
 	}
 	
 	public function contains($key) {
-		return $this->objConnection->exists($key);
+		return $this->connection->exists($key);
 	}
 
 	public function delete($key) {
-		$result = $this->objConnection->delete($key);
+		$result = $this->connection->delete($key);
 		if(!$result) {
-			if(!$this->objConnection->exists($key)) {
+			if(!$this->connection->exists($key)) {
 				throw new KeyNotFoundException($key);
 			} else {
-				throw new OperationFailedException($this->objConnection->getLastError());
+				throw new OperationFailedException($this->connection->getLastError());
 			}
 		}
 	}
@@ -88,13 +88,13 @@ class RedisDriver implements Driver, Server {
 	public function increment($key, $offset=1) {
 		$result = null;
 		if($offset==1) {
-			$result = $this->objConnection->incr($key);
+			$result = $this->connection->incr($key);
 		} else {
-			$result = $this->objConnection->incrBy($key, $offset);
+			$result = $this->connection->incrBy($key, $offset);
 		}
 		if($result===FALSE) {	
 			// driver automatically creates not found key as "0"
-			throw new OperationFailedException($this->objConnection->getLastError());
+			throw new OperationFailedException($this->connection->getLastError());
 		}
 		return $result;
 	}
@@ -102,21 +102,21 @@ class RedisDriver implements Driver, Server {
 	public function decrement($key, $offset=1) {
 		$result = null;
 		if($offset==1) {
-			$result = $this->objConnection->decr($key);
+			$result = $this->connection->decr($key);
 		} else {
-			$result = $this->objConnection->decrBy($key, $offset);
+			$result = $this->connection->decrBy($key, $offset);
 		}
 		if($result===FALSE) {
 			// driver automatically creates not found key as "-1"
-			throw new OperationFailedException($this->objConnection->getLastError());
+			throw new OperationFailedException($this->connection->getLastError());
 		}
 		return $result;
 	}
 	
 	public function flush() {
-		$result = $this->objConnection->flushAll();
+		$result = $this->connection->flushAll();
 		if(!$result) {
-			throw new OperationFailedException($this->objConnection->getLastError());
+			throw new OperationFailedException($this->connection->getLastError());
 		}
 	}
 	
@@ -127,6 +127,6 @@ class RedisDriver implements Driver, Server {
 	 * @return \Redis|\RedisCluster
 	 */
 	public function getDriver() {
-		return $this->objConnection;
+		return $this->connection;
 	}
 }
