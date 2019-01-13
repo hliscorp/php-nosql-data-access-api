@@ -1,6 +1,7 @@
 <?php
 namespace Lucinda\NoSQL;
 
+require_once("exceptions/ConfigurationException.php");
 require_once("exceptions/ConnectionException.php");
 require_once("MemcacheDataSource.php");
 require_once("Driver.php");
@@ -15,21 +16,44 @@ class MemcacheDriver implements Driver, Server {
 	 */
 	private $connection;
 
+	/**
+	 * {@inheritDoc}
+	 * @see Server::connect()
+	 */
 	public function connect(DataSource $dataSource) {
-		if(!$dataSource instanceof MemcacheDataSource) throw new ConnectionException("Invalid data source type");
+	    if(!$dataSource instanceof MemcacheDataSource) {
+	        throw new ConfigurationException("Invalid data source type");
+	    }
 		$memcache = new \Memcache();
 		$servers = $dataSource->getServers();
-		if(empty($servers)) throw new ConnectionException("No servers are set!");
+		if(empty($servers)) {
+		    throw new ConfigurationException("No servers are set!");
+		}
 		foreach($servers as $host=>$port) {
 			$memcache->addServer($host, $port, $dataSource->isPersistent(), 1, ($dataSource->getTimeout()?$dataSource->getTimeout():1));
+		}
+		// check connections
+		$stats = $memcache->getExtendedStats();
+		foreach($servers as $host=>$port) {
+		    if(empty($stats[$host.":".$port])) {
+		        throw new ConnectionException("Connection to host failed: ".$host.":".$port);
+		    }
 		}		 
 		$this->connection = $memcache;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Server::disconnect()
+	 */
 	public function disconnect() {
 		$this->connection->close();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::set()
+	 */
 	public function set($key, $value, $expiration=0) {
 		$result = $this->connection->set($key, $value, 0, $expiration);
 		if(!$result) {
@@ -37,6 +61,10 @@ class MemcacheDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::get()
+	 */
 	public function get($key) {
 		$result = $this->connection->get($key); // driver makes it impossible to distinguish between false and failure
 		if($result===false) {
@@ -45,10 +73,18 @@ class MemcacheDriver implements Driver, Server {
 		return $result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::contains()
+	 */
 	public function contains($key) {
 		return ($this->connection->get($key)!==false?true:false);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::delete()
+	 */
 	public function delete($key) {
 		$result = $this->connection->delete($key);
 		if(!$result) {
@@ -56,6 +92,10 @@ class MemcacheDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::increment()
+	 */
 	public function increment($key, $offset = 1) {
 		$result = $this->connection->increment($key, $offset);
 		if($result===false) {
@@ -64,6 +104,10 @@ class MemcacheDriver implements Driver, Server {
 		return $result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::decrement()
+	 */
 	public function decrement($key, $offset = 1) {
 		$result = $this->connection->decrement($key, $offset);
 		if($result===false) {
@@ -72,8 +116,13 @@ class MemcacheDriver implements Driver, Server {
 		return $result;
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see Driver::flush()
+	 */
 	public function flush() {
-		$this->connection->flush();
+	    $result = $this->connection->flush();
 		if(!$result) {
 			throw new OperationFailedException();
 		}

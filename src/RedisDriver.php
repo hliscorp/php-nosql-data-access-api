@@ -2,6 +2,7 @@
 namespace Lucinda\NoSQL;
 
 require_once("exceptions/ConnectionException.php");
+require_once("exceptions/ConfigurationException.php");
 require_once("RedisDataSource.php");
 require_once("Driver.php");
 require_once("Server.php");
@@ -17,35 +18,62 @@ class RedisDriver implements Driver, Server {
 	 */
 	private $connection;
 
+	/**
+	 * {@inheritDoc}
+	 * @see Server::connect()
+	 */
 	public function connect(DataSource $dataSource) {
-		if(!$dataSource instanceof RedisDataSource) throw new ConnectionException("Invalid data source type");
+	    if(!$dataSource instanceof RedisDataSource) {
+	        throw new ConfigurationException("Invalid data source type");
+	    }
 		$servers = $dataSource->getServers();
-		if(empty($servers)) throw new ConnectionException("No servers are set!");
+		if(empty($servers)) {
+		    throw new ConfigurationException("No servers are set!");
+		}
 		$redis = null;
+		
 		if(sizeof($servers)>1) {
-			$serverList = array();
-			foreach($servers as $name=>$port) {
-				$serverList[] = $name.":".$port;
-			}
-			$redis = new \RedisCluster(NULL, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
+		    try {
+		        $serverList = array();
+		        foreach($servers as $name=>$port) {
+		            $serverList[] = $name.":".$port;
+		        }
+		        $redis = new \RedisCluster(NULL, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
+		    } catch(\RedisClusterException $e) {
+		        throw new ConnectionException($e->getMessage());
+		    }
 		} else {
-			$port = reset($servers);
-			$host = key($servers);
-			$redis = new \Redis();
-			if($dataSource->isPersistent()) {
-				$redis->pconnect($host, $port, $dataSource->getTimeout());
-			} else {
-				$redis->connect($host, $port, $dataSource->getTimeout());
-			}
+		    try {
+		        $port = reset($servers);
+		        $host = key($servers);
+		        $redis = new \Redis();
+		        if($dataSource->isPersistent()) {
+		            $result = $redis->pconnect($host, $port, $dataSource->getTimeout());
+		            if(!$result) throw new ConnectionException();
+		        } else {
+		            $result = $redis->connect($host, $port, $dataSource->getTimeout());
+		            if(!$result) throw new ConnectionException();
+		        }
+		    } catch(\RedisException $e) {
+		        throw new ConnectionException($e->getMessage());		        
+		    }
 		}
 		
 		$this->connection = $redis;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Server::disconnect()
+	 */
 	public function disconnect() {
 		$this->connection->close();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::set()
+	 */
 	public function set($key, $value, $expiration=0) {
 		$result = null;
 		if($expiration==0) {
@@ -58,6 +86,10 @@ class RedisDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::get()
+	 */
 	public function get($key) {
 		$result = $this->connection->get($key);
 		if($result === false) {
@@ -70,10 +102,18 @@ class RedisDriver implements Driver, Server {
 		return $result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::contains()
+	 */
 	public function contains($key) {
 		return $this->connection->exists($key);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::delete()
+	 */
 	public function delete($key) {
 		$result = $this->connection->delete($key);
 		if(!$result) {
@@ -85,6 +125,10 @@ class RedisDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::increment()
+	 */
 	public function increment($key, $offset=1) {
 		$result = null;
 		if($offset==1) {
@@ -99,6 +143,10 @@ class RedisDriver implements Driver, Server {
 		return $result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::decrement()
+	 */
 	public function decrement($key, $offset=1) {
 		$result = null;
 		if($offset==1) {
@@ -113,6 +161,10 @@ class RedisDriver implements Driver, Server {
 		return $result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::flush()
+	 */
 	public function flush() {
 		$result = $this->connection->flushAll();
 		if(!$result) {

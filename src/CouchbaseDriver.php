@@ -2,6 +2,7 @@
 namespace Lucinda\NoSQL;
 
 require_once("exceptions/ConnectionException.php");
+require_once("exceptions/ConfigurationException.php");
 require_once("CouchbaseDataSource.php");
 require_once("Driver.php");
 require_once("Server.php");
@@ -15,29 +16,47 @@ class CouchbaseDriver implements Driver, Server {
 	 */
 	private $bucket;
 
+	/**
+	 * {@inheritDoc}
+	 * @see Server::connect()
+	 */
 	public function connect(DataSource $dataSource) {
 		if(!$dataSource instanceof CouchbaseDataSource) {
-			throw new ConnectionException("Invalid data source type");
+		    throw new ConfigurationException("Invalid data source type");
 		}
-		if(!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) throw new ConnectionException("Insufficient settings");
+		if(!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) {
+		    throw new ConfigurationException("Insufficient settings");
+		}
 		
-		$authenticator = new \Couchbase\PasswordAuthenticator();
-		$authenticator->username($dataSource->getUserName())->password($dataSource->getPassword());
-		
-		$cluster = new \CouchbaseCluster("couchbase://".$dataSource->getHost());
-		$cluster->authenticate($authenticator);
-		
-		if($dataSource->getBucketPassword()) {
-			$this->bucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
-		} else {
-			$this->bucket = $cluster->openBucket($dataSource->getBucketName());
+		try {
+    		$authenticator = new \Couchbase\PasswordAuthenticator();
+    		$authenticator->username($dataSource->getUserName())->password($dataSource->getPassword());
+    		
+    		$cluster = new \CouchbaseCluster("couchbase://".$dataSource->getHost());
+    		$cluster->authenticate($authenticator);
+    		
+    		if($dataSource->getBucketPassword()) {
+    			$this->bucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
+    		} else {
+    			$this->bucket = $cluster->openBucket($dataSource->getBucketName());
+    		}
+		} catch(\CouchbaseException $e) {
+		    throw new ConnectionException($e->getMessage());
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Server::disconnect()
+	 */
 	public function disconnect() {
 		// driver does not support manual disconnect
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::set()
+	 */
 	public function set($key, $value, $expiration=0) {
 		$flags = array();
 		if($expiration) $flags["expiry"] = $expiration;
@@ -48,6 +67,10 @@ class CouchbaseDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::get()
+	 */
 	public function get($key) {
 		try {
 			$result = $this->bucket->get($key);
@@ -61,6 +84,10 @@ class CouchbaseDriver implements Driver, Server {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::contains()
+	 */
 	public function contains($key) {
 		try {
 			$this->bucket->get($key);
@@ -70,6 +97,10 @@ class CouchbaseDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::delete()
+	 */
 	public function delete($key) {
 		try {
 			$this->bucket->remove($key);
@@ -82,6 +113,10 @@ class CouchbaseDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::increment()
+	 */
 	public function increment($key, $offset = 1) {
 		try {
 			$result = $this->bucket->counter($key, $offset);
@@ -95,6 +130,10 @@ class CouchbaseDriver implements Driver, Server {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::decrement()
+	 */
 	public function decrement($key, $offset = 1) {
 		try {
 			$result = $this->bucket->counter($key, -$offset);
@@ -108,6 +147,10 @@ class CouchbaseDriver implements Driver, Server {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see Driver::flush()
+	 */
 	public function flush() {
 		try {
 			$this->bucket->manager()->flush();
