@@ -38,7 +38,7 @@ class ConnectionFactory {
 	 * returns an object of that connection to delegate operations to.
 	 * 
 	 * @param string $serverName Unique identifier of server you will be connecting to.
-	 * @throws ConnectionException
+	 * @throws ConnectionException If connection to NoSQL server fails.
 	 * @return Driver
 	 */
 	public static function getInstance($serverName){
@@ -53,7 +53,7 @@ class ConnectionFactory {
 	/**
 	 * Connects to database automatically.
 	 *
-	 * @throws ConnectionException
+	 * @throws ConnectionException If connection to NoSQL server fails
 	 */
 	private function __construct($serverName) {
 		if(!isset(self::$dataSources[$serverName])) throw new ConnectionException("Datasource not set for: ".$serverName);
