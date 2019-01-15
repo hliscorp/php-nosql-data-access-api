@@ -4,7 +4,7 @@ namespace Lucinda\NoSQL;
 /**
  * Implements a database connection singleton on top of NoSQLConnection object. Useful when your application works with only one database server.
  */
-final class ConnectionSingleton
+class ConnectionSingleton
 {
     /**
      * @var DataSource
