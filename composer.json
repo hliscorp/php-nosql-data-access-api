@@ -1,9 +1,9 @@
 {
     "name": "lucinda/nosql-data-access",
     "type": "library",
-    "description": "Abstracts communication with NoSQL servers/solutions via drivers",
+    "description": "Abstracts communication with NoSQL document databases through a PDO-like structure",
     "keywords": ["nosql","driver","redis","couchbase","memcache","memcached","apc","apcu"],
-    "homepage": "http://www.lucinda-framework.com/nosql-data-access-api",
+    "homepage": "http://www.lucinda-framework.com/nosql-data-access",
     "license": "MIT",
     "authors": [
         {
