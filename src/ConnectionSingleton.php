@@ -23,20 +23,22 @@ class ConnectionSingleton
     
     /**
      * Registers a data source object encapsulatings connection info.
-     * 
+     *
      * @param DataSource $dataSource
      */
-    public static function setDataSource(DataSource $dataSource) {
+    public static function setDataSource(DataSource $dataSource)
+    {
         self::$dataSource = $dataSource;
     }
         
     /**
-	 * Opens connection to database server (if not already open) according to DataSource and returns an object of that connection to delegate operations to. 
-     * 
+     * Opens connection to database server (if not already open) according to DataSource and returns an object of that connection to delegate operations to.
+     *
      * @return Driver
      */
-    public static function getInstance()   {
-        if(self::$instance) {
+    public static function getInstance()
+    {
+        if (self::$instance) {
             return self::$instance->getConnection();
         }
         self::$instance = new ConnectionSingleton();
@@ -45,36 +47,44 @@ class ConnectionSingleton
     
     /**
      * Connects to database automatically.
-     * 
+     *
      * @throws ConnectionException
      */
-    private function __construct() {
-		if(!self::$dataSource) throw new ConnectionException("Datasource not set!");
-		$className = str_replace("DataSource","Driver",get_class(self::$dataSource));
-		if(!class_exists($className)) throw new ConnectionException("Class not found: ".$className);
-		$this->database_connection = new $className();
-		if($this->database_connection instanceof Server) {
-        	$this->database_connection->connect(self::$dataSource);
-		}
+    private function __construct()
+    {
+        if (!self::$dataSource) {
+            throw new ConnectionException("Datasource not set!");
+        }
+        $className = str_replace("DataSource", "Driver", get_class(self::$dataSource));
+        if (!class_exists($className)) {
+            throw new ConnectionException("Class not found: ".$className);
+        }
+        $this->database_connection = new $className();
+        if ($this->database_connection instanceof Server) {
+            $this->database_connection->connect(self::$dataSource);
+        }
     }
     
     /**
      * Internal utility to get connection.
-     * 
+     *
      * @return Driver
      */
-    private function getConnection() {
+    private function getConnection()
+    {
         return $this->database_connection;
     }
     
     /**
      * Disconnects from database server automatically.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         try {
-        	if($this->database_connection && $this->database_connection instanceof Server) {
-            	$this->database_connection->disconnect();
-        	}
-        } catch(\Exception $e) {}
+            if ($this->database_connection && $this->database_connection instanceof Server) {
+                $this->database_connection->disconnect();
+            }
+        } catch (\Exception $e) {
+        }
     }
 }

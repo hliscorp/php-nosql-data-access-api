@@ -1,6 +1,9 @@
 <?php
 namespace Lucinda\NoSQL;
+
 /**
- * Exception thrown when developer misconfigures datasource for a NoSQL provider 
+ * Exception thrown when developer misconfigures datasource for a NoSQL provider
  */
-class ConfigurationException extends \Exception {}
+class ConfigurationException extends \Exception
+{
+}
