@@ -1,9 +1,6 @@
 <?php
 namespace Lucinda\NoSQL;
 
-require_once("exceptions/KeyNotFoundException.php");
-require_once("exceptions/OperationFailedException.php");
-
 /**
  * Defines data manipulation operations in a nosql database
  */

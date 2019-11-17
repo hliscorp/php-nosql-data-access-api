@@ -1,8 +1,7 @@
 <?php
 namespace Lucinda\NoSQL;
 
-require_once("APCuDataSource.php");
-require_once("Driver.php");
+require("APCuDataSource.php");
 
 /**
  * Defines APCu implementation of nosql operations.

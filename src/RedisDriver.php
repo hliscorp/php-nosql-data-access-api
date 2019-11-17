@@ -1,11 +1,7 @@
 <?php
 namespace Lucinda\NoSQL;
 
-require_once("exceptions/ConnectionException.php");
-require_once("exceptions/ConfigurationException.php");
-require_once("RedisDataSource.php");
-require_once("Driver.php");
-require_once("Server.php");
+require("RedisDataSource.php");
 
 /**
  * Defines redis implementation of nosql operations.

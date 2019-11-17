@@ -1,8 +1,6 @@
 <?php
 namespace Lucinda\NoSQL;
 
-require_once("DataSource.php");
-
 /**
  * Encapsulates couchbase server connection & bucket data.
 */

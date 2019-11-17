@@ -1,11 +1,7 @@
 <?php
 namespace Lucinda\NoSQL;
 
-require_once("exceptions/ConfigurationException.php");
-require_once("exceptions/ConnectionException.php");
-require_once("MemcachedDataSource.php");
-require_once("Driver.php");
-require_once("Server.php");
+require("MemcachedDataSource.php");
 
 /**
  * Defines memcached implementation of nosql operations.

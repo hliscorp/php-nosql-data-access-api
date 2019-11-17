@@ -1,8 +1,7 @@
 <?php
 namespace Lucinda\NoSQL;
 
-require_once("APCDataSource.php");
-require_once("Driver.php");
+require("APCDataSource.php");
 
 /**
  * Defines APC implementation of nosql operations.
