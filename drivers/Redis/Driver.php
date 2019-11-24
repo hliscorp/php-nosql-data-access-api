@@ -1,14 +1,19 @@
 <?php
-namespace Lucinda\NoSQL;
+namespace Lucinda\NoSQL\Vendor\Redis;
 
-require("RedisDataSource.php");
+use \Lucinda\NoSQL\ConfigurationException;
+use \Lucinda\NoSQL\ConnectionException;
+use \Lucinda\NoSQL\OperationFailedException;
+use \Lucinda\NoSQL\KeyNotFoundException;
+use \Lucinda\NoSQL\DataSource;
+use \Lucinda\NoSQL\Vendor\Redis\DataSource as RedisDataSource;
 
 /**
  * Defines redis implementation of nosql operations.
  *
  * DOCS: https://github.com/nicolasff/phpredis/blob/master/README.markdown#connect-open
  */
-class RedisDriver implements Driver, Server
+class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
 {
     /**
      * @var \Redis
@@ -16,10 +21,13 @@ class RedisDriver implements Driver, Server
     private $connection;
 
     /**
-     * {@inheritDoc}
-     * @see Server::connect()
+     * Connects to nosql provider
+     *
+     * @param DataSource $dataSource
+     * @throws ConfigurationException If developer misconfigures data source.
+     * @throws ConnectionException If connection to database server fails.
      */
-    public function connect(DataSource $dataSource)
+    public function connect(DataSource $dataSource): void
     {
         if (!$dataSource instanceof RedisDataSource) {
             throw new ConfigurationException("Invalid data source type");
@@ -65,19 +73,22 @@ class RedisDriver implements Driver, Server
     }
     
     /**
-     * {@inheritDoc}
-     * @see Server::disconnect()
+     * Disconnects from nosql provider
      */
-    public function disconnect()
+    public function disconnect(): void
     {
         $this->connection->close();
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::set()
+     * Sets value to store that will be accessible by key.
+     *
+     * @param string $key Key based on which value will be accessible.
+     * @param mixed $value Value to store.
+     * @param integer $expiration Time to live in seconds until expiration (0: never expires)
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function set($key, $value, $expiration=0)
+    public function set(string $key, $value, int $expiration=0): void
     {
         $result = null;
         if ($expiration==0) {
@@ -91,10 +102,14 @@ class RedisDriver implements Driver, Server
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::get()
+     * Gets value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return mixed Resulting value.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function get($key)
+    public function get(string $key)
     {
         $result = $this->connection->get($key);
         if ($result === false) {
@@ -108,19 +123,24 @@ class RedisDriver implements Driver, Server
     }
     
     /**
-     * {@inheritDoc}
-     * @see Driver::contains()
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
      */
-    public function contains($key)
+    public function contains(string $key): bool
     {
         return $this->connection->exists($key);
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::delete()
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function delete($key)
+    public function delete(string $key): void
     {
         $result = $this->connection->delete($key);
         if (!$result) {
@@ -133,10 +153,15 @@ class RedisDriver implements Driver, Server
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::increment()
+     * Increments a counter by key.
+     *
+     * @param string $key Key based on which counter will be accessible from
+     * @param integer $offset Incrementation step.
+     * @return integer Incremented value (value of offset if key originally did not exist)
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function increment($key, $offset=1)
+    public function increment(string $key, int $offset=1): int
     {
         $result = null;
         if ($offset==1) {
@@ -152,10 +177,15 @@ class RedisDriver implements Driver, Server
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::decrement()
+     * Decrements a counter by key.
+     *
+     * @param string $key Key based on which counter will be accessible from
+     * @param integer $offset Decrementation step.
+     * @return integer Decremented value (value of offset if key originally did not exist)
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function decrement($key, $offset=1)
+    public function decrement(string $key, int $offset=1): int
     {
         $result = null;
         if ($offset==1) {
@@ -171,10 +201,10 @@ class RedisDriver implements Driver, Server
     }
     
     /**
-     * {@inheritDoc}
-     * @see Driver::flush()
+     * Flushes DB of all keys.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function flush()
+    public function flush(): void
     {
         $result = $this->connection->flushAll();
         if (!$result) {
@@ -188,7 +218,7 @@ class RedisDriver implements Driver, Server
      *
      * @return \Redis|\RedisCluster
      */
-    public function getDriver()
+    public function getDriver(): \Redis|\RedisCluster
     {
         return $this->connection;
     }

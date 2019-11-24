@@ -16,7 +16,7 @@ abstract class ServerDataSource
      * @param string $host Value of server host.
      * @param integer $port (optional) Value of server port. If not set, it will be replaced by default port specific to no-sql vendor.
      */
-    public function addServer($host, $port = 0)
+    public function addServer(string $host, int $port = 0): void
     {
         if (!$port) {
             $port = $this->getDefaultPort();
@@ -29,7 +29,7 @@ abstract class ServerDataSource
      *
      * @return array
      */
-    public function getServers()
+    public function getServers(): array
     {
         return $this->servers;
     }
@@ -39,7 +39,7 @@ abstract class ServerDataSource
      *
      * @param integer $seconds
      */
-    public function setTimeout($seconds)
+    public function setTimeout(int $seconds): void
     {
         $this->timeout = $seconds;
     }
@@ -49,7 +49,7 @@ abstract class ServerDataSource
      *
      * @return integer
      */
-    public function getTimeout()
+    public function getTimeout(): int
     {
         return $this->timeout;
     }
@@ -57,7 +57,7 @@ abstract class ServerDataSource
     /**
      * Signals that client wants persistent connections.
      */
-    public function setPersistent()
+    public function setPersistent(): void
     {
         $this->persistent = true;
     }
@@ -67,7 +67,7 @@ abstract class ServerDataSource
      *
      * @return boolean
      */
-    public function isPersistent()
+    public function isPersistent(): bool
     {
         return $this->persistent;
     }
@@ -77,5 +77,5 @@ abstract class ServerDataSource
      *
      * @return integer
      */
-    abstract protected function getDefaultPort();
+    abstract protected function getDefaultPort(): int;
 }

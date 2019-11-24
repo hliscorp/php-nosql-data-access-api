@@ -1,10 +1,10 @@
 <?php
-namespace Lucinda\NoSQL;
+namespace Lucinda\NoSQL\Vendor\Couchbase;
 
 /**
  * Encapsulates couchbase server connection & bucket data.
 */
-class CouchbaseDataSource implements DataSource
+class DataSource implements \Lucinda\NoSQL\DataSource
 {
     private $host;
     
@@ -19,7 +19,7 @@ class CouchbaseDataSource implements DataSource
      *
      * @param string $host
      */
-    public function setHost($host)
+    public function setHost(string $host): void
     {
         $this->host = $host;
     }
@@ -29,7 +29,7 @@ class CouchbaseDataSource implements DataSource
      *
      * @return string
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -40,7 +40,7 @@ class CouchbaseDataSource implements DataSource
      * @param string $username
      * @param string $password
      */
-    public function setAuthenticationInfo($username, $password)
+    public function setAuthenticationInfo(string $username, string $password): void
     {
         $this->userName = $username;
         $this->password = $password;
@@ -51,7 +51,7 @@ class CouchbaseDataSource implements DataSource
      *
      * @return string
      */
-    public function getUserName()
+    public function getUserName(): string
     {
         return $this->userName;
     }
@@ -62,7 +62,7 @@ class CouchbaseDataSource implements DataSource
      *
      * @return string
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -73,7 +73,7 @@ class CouchbaseDataSource implements DataSource
      * @param string $bucketName
      * @param string $bucketPassword
      */
-    public function setBucketInfo($bucketName, $bucketPassword="")
+    public function setBucketInfo(string $bucketName, string $bucketPassword=""): void
     {
         $this->bucketName = $bucketName;
         $this->bucketPassword = $bucketPassword;
@@ -84,7 +84,7 @@ class CouchbaseDataSource implements DataSource
      *
      * @return string
      */
-    public function getBucketName()
+    public function getBucketName(): string
     {
         return $this->bucketName;
     }
@@ -92,9 +92,9 @@ class CouchbaseDataSource implements DataSource
     /**
      * Gets password necessary to access bucket
      *
-     * @return string|null
+     * @return string
      */
-    public function getBucketPassword()
+    public function getBucketPassword(): string
     {
         return $this->bucketPassword;
     }

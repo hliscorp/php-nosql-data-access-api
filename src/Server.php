@@ -13,10 +13,10 @@ interface Server
      * @throws ConfigurationException If developer misconfigures data source.
      * @throws ConnectionException If connection to database server fails.
      */
-    public function connect(DataSource $dataSource);
+    public function connect(DataSource $dataSource): void;
     
     /**
      * Disconnects from nosql provider
      */
-    public function disconnect();
+    public function disconnect(): void;
 }
