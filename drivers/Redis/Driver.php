@@ -218,7 +218,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      *
      * @return \Redis|\RedisCluster
      */
-    public function getDriver(): \Redis|\RedisCluster
+    public function getDriver()
     {
         return $this->connection;
     }
