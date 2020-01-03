@@ -38,10 +38,9 @@ class ConnectionSingleton
      */
     public static function getInstance(): Driver
     {
-        if (self::$instance) {
-            return self::$instance->getConnection();
+        if (!self::$instance) {
+            self::$instance = new ConnectionSingleton();
         }
-        self::$instance = new ConnectionSingleton();
         return self::$instance->getConnection();
     }
     
