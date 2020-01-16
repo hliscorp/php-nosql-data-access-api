@@ -20,7 +20,7 @@ class ConnectionFactory
     private static $dataSources;
     
     /**
-     * @var Server
+     * @var Driver
      */
     private $database_connection = null;
     
@@ -58,15 +58,12 @@ class ConnectionFactory
      * @param string $serverName Unique identifier of server you will be connecting to.
      * @throws ConnectionException If connection to NoSQL server fails
      */
-    private function __construct(string $serverName): void
+    private function __construct(string $serverName)
     {
         if (!isset(self::$dataSources[$serverName])) {
             throw new ConnectionException("Datasource not set for: ".$serverName);
         }
         $className = str_replace("DataSource", "Driver", get_class(self::$dataSources[$serverName]));
-        if (!class_exists($className)) {
-            throw new ConnectionException("Class not found: ".$className);
-        }
         $this->database_connection = new $className();
         if ($this->database_connection instanceof Server) {
             $this->database_connection->connect(self::$dataSources[$serverName]);
@@ -86,7 +83,7 @@ class ConnectionFactory
     /**
      * Disconnects from database server automatically.
      */
-    public function __destruct(): void
+    public function __destruct()
     {
         try {
             if ($this->database_connection && $this->database_connection instanceof Server) {

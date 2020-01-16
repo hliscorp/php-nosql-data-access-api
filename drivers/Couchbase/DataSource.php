@@ -1,6 +1,8 @@
 <?php
 namespace Lucinda\NoSQL\Vendor\Couchbase;
 
+use Lucinda\NoSQL\ConfigurationException;
+
 /**
  * Encapsulates couchbase server connection & bucket data.
 */
@@ -13,17 +15,31 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     
     private $bucketName;
     private $bucketPassword;
-    
+
+
     /**
-     * Sets Couchbase cluster host name (or list of hosts separated by commas)
+     * Gets couchbase server info from XML
      *
-     * @param string $host
+     * @param \SimpleXMLElement $databaseInfo
+     * @throws ConfigurationException
      */
-    public function setHost(string $host): void
+    public function __construct(\SimpleXMLElement $databaseInfo)
     {
+        $host = (string) $databaseInfo["host"];
+        $userName = (string) $databaseInfo["username"];
+        $password = (string) $databaseInfo["password"];
+        $bucket = (string) $databaseInfo["bucket_name"];
+        if (!$host || !$userName || !$password || !$bucket) {
+            throw new ConfigurationException("For COUCHBASE driver following attributes are mandatory: host, username, password, bucket_name");
+        }
+
         $this->host = $host;
+        $this->userName = $userName;
+        $this->password = $password;
+        $this->bucketName = $bucket;
+        $this->bucketPassword = (string) $databaseInfo["bucket_password"];
     }
-        
+
     /**
      * Gets Couchbase cluster host name.
      *
@@ -32,18 +48,6 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     public function getHost(): string
     {
         return $this->host;
-    }
-    
-    /**
-     * Sets credentials required by connection to server.
-     *
-     * @param string $username
-     * @param string $password
-     */
-    public function setAuthenticationInfo(string $username, string $password): void
-    {
-        $this->userName = $username;
-        $this->password = $password;
     }
     
     /**
@@ -65,18 +69,6 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     public function getPassword(): string
     {
         return $this->password;
-    }
-    
-    /**
-     * Sets information about couchbase bucket connection will be using (optionally with a password as well)
-     *
-     * @param string $bucketName
-     * @param string $bucketPassword
-     */
-    public function setBucketInfo(string $bucketName, string $bucketPassword=""): void
-    {
-        $this->bucketName = $bucketName;
-        $this->bucketPassword = $bucketPassword;
     }
     
     /**

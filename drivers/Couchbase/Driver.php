@@ -26,7 +26,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      */
     public function connect(DataSource $dataSource): void
     {
-        if (!$dataSource instanceof CouchbaseDataSource) {
+        if (!$dataSource instanceof \Lucinda\NoSQL\Vendor\Couchbase\DataSource) {
             throw new ConfigurationException("Invalid data source type");
         }
         if (!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) {

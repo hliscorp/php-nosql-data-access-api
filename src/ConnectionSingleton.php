@@ -17,7 +17,7 @@ class ConnectionSingleton
     private static $instance = null;
     
     /**
-     * @var Server
+     * @var Driver
      */
     private $database_connection = null;
     
@@ -49,15 +49,12 @@ class ConnectionSingleton
      *
      * @throws ConnectionException
      */
-    private function __construct(): void
+    private function __construct()
     {
         if (!self::$dataSource) {
             throw new ConnectionException("Datasource not set!");
         }
         $className = str_replace("DataSource", "Driver", get_class(self::$dataSource));
-        if (!class_exists($className)) {
-            throw new ConnectionException("Class not found: ".$className);
-        }
         $this->database_connection = new $className();
         if ($this->database_connection instanceof Server) {
             $this->database_connection->connect(self::$dataSource);
@@ -77,7 +74,7 @@ class ConnectionSingleton
     /**
      * Disconnects from database server automatically.
      */
-    public function __destruct(): void
+    public function __destruct()
     {
         try {
             if ($this->database_connection && $this->database_connection instanceof Server) {

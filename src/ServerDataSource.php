@@ -9,23 +9,39 @@ abstract class ServerDataSource
     private $servers = array();
     private $timeout;
     private $persistent = false;
-    
+
     /**
-     * Adds server to connection pool.
-     *
-     * @param string $host Value of server host.
-     * @param integer $port (optional) Value of server port. If not set, it will be replaced by default port specific to no-sql vendor.
+     * ServerDataSource constructor.
+     * @param \SimpleXMLElement $databaseInfo
+     * @throws ConfigurationException
      */
-    public function addServer(string $host, int $port = 0): void
+    public function __construct(\SimpleXMLElement $databaseInfo)
     {
-        if (!$port) {
-            $port = $this->getDefaultPort();
+        // set host and ports
+        $temp = (string) $databaseInfo["host"];
+        if (!$temp) {
+            throw new ConfigurationException("Attribute 'host' is mandatory for 'server' tag");
         }
-        $this->servers[$host] = $port;
+        $hosts = explode(",", $temp);
+        foreach ($hosts as $hostAndPort) {
+            $hostAndPort = trim($hostAndPort);
+            $position = strpos($hostAndPort, ":");
+            if ($position!==false) {
+                $this->servers[substr($hostAndPort, 0, $position)] = (int) substr($hostAndPort, $position+1);
+            } else {
+                $this->servers[$hostAndPort] = $this->getDefaultPort();
+            }
+        }
+
+        // set timeout
+        $this->timeout = (int) $databaseInfo["timeout"];
+
+        // set persistent
+        $this->persistent = ((string) $databaseInfo["persistent"]?true:false);
     }
-    
+
     /**
-     * Gets servers that take part of connection pool.
+     * Gets server host:port combinations to connect to
      *
      * @return array
      */
@@ -33,17 +49,7 @@ abstract class ServerDataSource
     {
         return $this->servers;
     }
-    
-    /**
-     * Sets operations timeout.
-     *
-     * @param integer $seconds
-     */
-    public function setTimeout(int $seconds): void
-    {
-        $this->timeout = $seconds;
-    }
-    
+
     /**
      * Gets operations timeout.
      *
@@ -53,15 +59,7 @@ abstract class ServerDataSource
     {
         return $this->timeout;
     }
-    
-    /**
-     * Signals that client wants persistent connections.
-     */
-    public function setPersistent(): void
-    {
-        $this->persistent = true;
-    }
-    
+
     /**
      * Checks if client wanted connections to be persistent.
      *
