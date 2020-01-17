@@ -9,20 +9,20 @@ class ConnectionFactory
     /**
      * Stores open connections.
      *
-     * @var array[string:Server]
+     * @var Driver[string]
      */
     private static $instances;
     
     /**
      * Stores registered data sources.
-     * @var array[string:DataSource]
+     * @var DataSource[string]
      */
     private static $dataSources;
     
     /**
      * @var Driver
      */
-    private $database_connection = null;
+    private $driver = null;
     
     /**
      * Registers a data source object encapsulatings connection info based on unique server identifier.
@@ -63,10 +63,9 @@ class ConnectionFactory
         if (!isset(self::$dataSources[$serverName])) {
             throw new ConnectionException("Datasource not set for: ".$serverName);
         }
-        $className = str_replace("DataSource", "Driver", get_class(self::$dataSources[$serverName]));
-        $this->database_connection = new $className();
-        if ($this->database_connection instanceof Server) {
-            $this->database_connection->connect(self::$dataSources[$serverName]);
+        $this->driver = self::$dataSources[$serverName]->getDriver();
+        if ($this->driver instanceof Server) {
+            $this->driver->connect(self::$dataSources[$serverName]);
         }
     }
     
@@ -77,7 +76,7 @@ class ConnectionFactory
      */
     private function getConnection(): Driver
     {
-        return $this->database_connection;
+        return $this->driver;
     }
     
     /**
@@ -86,8 +85,8 @@ class ConnectionFactory
     public function __destruct()
     {
         try {
-            if ($this->database_connection && $this->database_connection instanceof Server) {
-                $this->database_connection->disconnect();
+            if ($this->driver && $this->driver instanceof Server) {
+                $this->driver->disconnect();
             }
         } catch (\Exception $e) {
         }

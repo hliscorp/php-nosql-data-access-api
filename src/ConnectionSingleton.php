@@ -19,7 +19,7 @@ class ConnectionSingleton
     /**
      * @var Driver
      */
-    private $database_connection = null;
+    private $driver = null;
     
     /**
      * Registers a data source object encapsulatings connection info.
@@ -54,10 +54,9 @@ class ConnectionSingleton
         if (!self::$dataSource) {
             throw new ConnectionException("Datasource not set!");
         }
-        $className = str_replace("DataSource", "Driver", get_class(self::$dataSource));
-        $this->database_connection = new $className();
-        if ($this->database_connection instanceof Server) {
-            $this->database_connection->connect(self::$dataSource);
+        $this->driver = self::$dataSource->getDriver();
+        if ($this->driver instanceof Server) {
+            $this->driver->connect(self::$dataSource);
         }
     }
     
@@ -68,7 +67,7 @@ class ConnectionSingleton
      */
     private function getConnection(): Driver
     {
-        return $this->database_connection;
+        return $this->driver;
     }
     
     /**
@@ -77,8 +76,8 @@ class ConnectionSingleton
     public function __destruct()
     {
         try {
-            if ($this->database_connection && $this->database_connection instanceof Server) {
-                $this->database_connection->disconnect();
+            if ($this->driver && $this->driver instanceof Server) {
+                $this->driver->disconnect();
             }
         } catch (\Exception $e) {
         }

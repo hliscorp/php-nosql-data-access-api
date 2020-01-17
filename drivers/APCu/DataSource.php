@@ -6,4 +6,13 @@ namespace Lucinda\NoSQL\Vendor\APCu;
  */
 class DataSource implements \Lucinda\NoSQL\DataSource
 {
+    /**
+     * Gets driver associated to data source
+     *
+     * @return Driver
+     */
+    public function getDriver(): \Lucinda\NoSQL\Driver
+    {
+        return new Driver();
+    }
 }

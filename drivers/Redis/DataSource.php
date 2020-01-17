@@ -15,4 +15,14 @@ class DataSource extends \Lucinda\NoSQL\ServerDataSource implements \Lucinda\NoS
     {
         return 6379;
     }
+
+    /**
+     * Gets driver associated to data source
+     *
+     * @return Driver
+     */
+    public function getDriver(): \Lucinda\NoSQL\Driver
+    {
+        return new Driver();
+    }
 }
