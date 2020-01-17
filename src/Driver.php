@@ -15,6 +15,14 @@ interface Driver
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function set(string $key, $value, int $expiration=0): void;
+
+    /**
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
+     */
+    public function contains(string $key): bool;
     
     /**
      * Gets value by key.
@@ -25,23 +33,6 @@ interface Driver
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function get(string $key);
-    
-    /**
-     * Deletes value by key.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
-     */
-    public function delete(string $key): void;
-
-    /**
-     * Checks if key to access value from exists.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @return boolean
-     */
-    public function contains(string $key): bool;
     
     /**
      * Increments a counter by key.
@@ -64,6 +55,15 @@ interface Driver
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function decrement(string $key, int $offset = 1): int;
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void;
     
     /**
      * Flushes DB of all keys.

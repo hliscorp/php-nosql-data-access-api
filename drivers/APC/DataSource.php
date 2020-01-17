@@ -1,8 +1,6 @@
 <?php
 namespace Lucinda\NoSQL\Vendor\APC;
 
-use Lucinda\NoSQL\Driver;
-
 /**
  * Encapsulates a data source that does nothign but identify provider.
  */

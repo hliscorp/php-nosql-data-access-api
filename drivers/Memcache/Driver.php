@@ -47,14 +47,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
         }
         $this->connection = $memcache;
     }
-    
-    /**
-     * Disconnects from nosql provider
-     */
-    public function disconnect(): void
-    {
-        $this->connection->close();
-    }
 
     /**
      * Sets value to store that will be accessible by key.
@@ -73,6 +65,17 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     }
 
     /**
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
+     */
+    public function contains(string $key): bool
+    {
+        return ($this->connection->get($key)!==false?true:false);
+    }
+
+    /**
      * Gets value by key.
      *
      * @param string $key Key based on which value will be searched.
@@ -87,32 +90,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
         }
         return $result;
-    }
-    
-    /**
-     * Checks if key to access value from exists.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @return boolean
-     */
-    public function contains(string $key): bool
-    {
-        return ($this->connection->get($key)!==false?true:false);
-    }
-
-    /**
-     * Deletes value by key.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
-     */
-    public function delete(string $key): void
-    {
-        $result = $this->connection->delete($key);
-        if (!$result) {
-            throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
-        }
     }
 
     /**
@@ -150,7 +127,22 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
         }
         return $result;
     }
-    
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void
+    {
+        $result = $this->connection->delete($key);
+        if (!$result) {
+            throw new KeyNotFoundException($key); // driver doesn't allow checking if key exists, so by default key not found is assumed
+        }
+    }
+
     /**
      * Flushes DB of all keys.
      * @throws OperationFailedException If operation didn't succeed.
@@ -163,7 +155,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
         }
     }
     
-    
     /**
      * Gets a pointer to native wrapped object for advanced operations.
      *
@@ -172,5 +163,13 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     public function getDriver(): \Memcache
     {
         return $this->connection;
+    }
+
+    /**
+     * Disconnects from nosql provider
+     */
+    public function disconnect(): void
+    {
+        $this->connection->close();
     }
 }

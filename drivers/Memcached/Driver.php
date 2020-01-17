@@ -57,14 +57,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
         }
         $this->connection = $memcached;
     }
-    
-    /**
-     * Disconnects from nosql provider
-     */
-    public function disconnect(): void
-    {
-        $this->connection->quit();
-    }
 
     /**
      * Sets value to store that will be accessible by key.
@@ -81,6 +73,18 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             $resultCode = $this->connection->getResultCode();
             throw new OperationFailedException((string) $resultCode);
         }
+    }
+
+    /**
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
+     */
+    public function contains(string $key): bool
+    {
+        $this->connection->get($key);
+        return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode()?false:true);
     }
 
     /**
@@ -103,38 +107,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             }
         }
         return $result;
-    }
-    
-    /**
-     * Checks if key to access value from exists.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @return boolean
-     */
-    public function contains(string $key): bool
-    {
-        $this->connection->get($key);
-        return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode()?false:true);
-    }
-
-    /**
-     * Deletes value by key.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
-     */
-    public function delete(string $key): void
-    {
-        $result = $this->connection->delete($key);
-        if (!$result) {
-            $resultCode = $this->connection->getResultCode();
-            if (\Memcached::RES_NOTFOUND == $resultCode) {
-                throw new KeyNotFoundException($key);
-            } else {
-                throw new OperationFailedException((string) $resultCode);
-            }
-        }
     }
 
     /**
@@ -182,6 +154,26 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
         }
         return $result;
     }
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void
+    {
+        $result = $this->connection->delete($key);
+        if (!$result) {
+            $resultCode = $this->connection->getResultCode();
+            if (\Memcached::RES_NOTFOUND == $resultCode) {
+                throw new KeyNotFoundException($key);
+            } else {
+                throw new OperationFailedException((string) $resultCode);
+            }
+        }
+    }
     
     /**
      * Flushes DB of all keys.
@@ -204,5 +196,13 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     public function getDriver(): \Memcached
     {
         return $this->connection;
+    }
+
+    /**
+     * Disconnects from nosql provider
+     */
+    public function disconnect(): void
+    {
+        $this->connection->quit();
     }
 }

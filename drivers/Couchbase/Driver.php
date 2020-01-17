@@ -49,14 +49,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new ConnectionException($e->getMessage());
         }
     }
-    
-    /**
-     * Disconnects from nosql provider
-     */
-    public function disconnect(): void
-    {
-        // driver does not support manual disconnect
-    }
 
     /**
      * Sets value to store that will be accessible by key.
@@ -80,28 +72,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     }
 
     /**
-     * Gets value by key.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @return mixed Resulting value.
-     * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
-     */
-    public function get(string $key)
-    {
-        try {
-            $result = $this->bucket->get($key);
-            return $result->value;
-        } catch (\CouchbaseException $e) {
-            if (strpos($e->getMessage(), "LCB_KEY_ENOENT")!==false) {
-                throw new KeyNotFoundException($key);
-            } else {
-                throw new OperationFailedException($e->getMessage());
-            }
-        }
-    }
-    
-    /**
      * Checks if key to access value from exists.
      *
      * @param string $key Key based on which value will be searched.
@@ -118,16 +88,18 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     }
 
     /**
-     * Deletes value by key.
+     * Gets value by key.
      *
      * @param string $key Key based on which value will be searched.
+     * @return mixed Resulting value.
      * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
-    public function delete(string $key): void
+    public function get(string $key)
     {
         try {
-            $this->bucket->remove($key);
+            $result = $this->bucket->get($key);
+            return $result->value;
         } catch (\CouchbaseException $e) {
             if (strpos($e->getMessage(), "LCB_KEY_ENOENT")!==false) {
                 throw new KeyNotFoundException($key);
@@ -182,6 +154,26 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             }
         }
     }
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void
+    {
+        try {
+            $this->bucket->remove($key);
+        } catch (\CouchbaseException $e) {
+            if (strpos($e->getMessage(), "LCB_KEY_ENOENT")!==false) {
+                throw new KeyNotFoundException($key);
+            } else {
+                throw new OperationFailedException($e->getMessage());
+            }
+        }
+    }
     
     /**
      * Flushes DB of all keys.
@@ -204,5 +196,13 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     public function getDriver(): \CouchbaseBucket
     {
         return $this->bucket;
+    }
+
+    /**
+     * Disconnects from nosql provider
+     */
+    public function disconnect(): void
+    {
+        // driver does not support manual disconnect
     }
 }

@@ -24,6 +24,17 @@ class Driver implements \Lucinda\NoSQL\Driver
             throw new OperationFailedException();
         }
     }
+
+    /**
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
+     */
+    public function contains(string $key): bool
+    {
+        return apcu_exists($key);
+    }
     
     /**
      * Gets value by key.
@@ -44,36 +55,6 @@ class Driver implements \Lucinda\NoSQL\Driver
             }
         }
         return $result;
-    }
-    
-    /**
-     * Deletes value by key.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
-     */
-    public function delete(string $key): void
-    {
-        $result = apcu_delete($key);
-        if (!$result) {
-            if (!apcu_exists($key)) {
-                throw new KeyNotFoundException($key);
-            } else {
-                throw new OperationFailedException();
-            }
-        }
-    }
-    
-    /**
-     * Checks if key to access value from exists.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @return boolean
-     */
-    public function contains(string $key): bool
-    {
-        return apcu_exists($key);
     }
     
     /**
@@ -108,6 +89,25 @@ class Driver implements \Lucinda\NoSQL\Driver
             throw new OperationFailedException();
         }
         return $result;
+    }
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void
+    {
+        $result = apcu_delete($key);
+        if (!$result) {
+            if (!apcu_exists($key)) {
+                throw new KeyNotFoundException($key);
+            } else {
+                throw new OperationFailedException();
+            }
+        }
     }
     
     /**

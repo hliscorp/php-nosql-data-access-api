@@ -26,6 +26,17 @@ class Driver implements \Lucinda\NoSQL\Driver
     }
 
     /**
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
+     */
+    public function contains(string $key): bool
+    {
+        return apc_exists($key);
+    }
+
+    /**
      * Gets value by key.
      *
      * @param string $key Key based on which value will be searched.
@@ -44,36 +55,6 @@ class Driver implements \Lucinda\NoSQL\Driver
             }
         }
         return $result;
-    }
-
-    /**
-     * Deletes value by key.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
-     */
-    public function delete(string $key): void
-    {
-        $result = apc_delete($key);
-        if (!$result) {
-            if (!apc_exists($key)) {
-                throw new KeyNotFoundException($key);
-            } else {
-                throw new OperationFailedException();
-            }
-        }
-    }
-    
-    /**
-     * Checks if key to access value from exists.
-     *
-     * @param string $key Key based on which value will be searched.
-     * @return boolean
-     */
-    public function contains(string $key): bool
-    {
-        return apc_exists($key);
     }
 
     /**
@@ -118,6 +99,25 @@ class Driver implements \Lucinda\NoSQL\Driver
             }
         }
         return $result;
+    }
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void
+    {
+        $result = apc_delete($key);
+        if (!$result) {
+            if (!apc_exists($key)) {
+                throw new KeyNotFoundException($key);
+            } else {
+                throw new OperationFailedException();
+            }
+        }
     }
     
     /**
