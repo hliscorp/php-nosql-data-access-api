@@ -210,6 +210,6 @@ For tests and examples, check following files/folders in API sources:
 - [test.php](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/test.php): runs unit tests in console
 - [unit-tests.xml](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/unit-tests.xml): sets up unit tests
 - [tests](https://github.com/aherne/php-nosql-data-access-api/tree/v3.0.0/tests): unit tests for classes from [src](https://github.com/aherne/php-nosql-data-access-api/tree/v3.0.0/src) folder
-- [tests_drivers](https://github.com/aherne/php-nosql-data-access-api/tree/v3.0.0/tests_drivers): unit tests for classes from [src](https://github.com/aherne/php-nosql-data-access-api/tree/v3.0.0/drivers) folder
+- [tests_drivers](https://github.com/aherne/php-nosql-data-access-api/tree/v3.0.0/tests_drivers): unit tests for classes from [drivers](https://github.com/aherne/php-nosql-data-access-api/tree/v3.0.0/drivers) folder
 
 
