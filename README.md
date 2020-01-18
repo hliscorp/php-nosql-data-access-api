@@ -122,27 +122,27 @@ $driver->get("hello"); // gets value of "hello" key from store
 
 ## Querying
 
-Now that a [Lucinda\NoSQL\Driver](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/Driver.php) is retrieved, you are able to query database via following public methods:
+Now that a [Lucinda\NoSQL\Driver](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/Driver.php) is retrieved, you are able to query database via following public methods:
 
 Following methods are relevant to connection management (HANDLED BY API AUTOMATICALLY, so **to be used only in niche situations**), available if driver detected also implements [Lucinda\NoSQL\Server](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/Server.php):
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
-| connect | [Lucinda\NoSQL\DataSource](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/DataSource.php) | void | Connects to database server based on matching vendor's data source. Throws [Lucinda\SQL\ConnectionException](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/ConnectionException.php) if connection fails! |
+| connect | [Lucinda\NoSQL\DataSource](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/DataSource.php) | void | Connects to database server based on matching vendor's data source. Throws [Lucinda\SQL\ConnectionException](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/ConnectionException.php) if connection fails! |
 | disconnect | void | void | Closes connection to database server. |
 
 ### Working with abstracted driver
 
-Following [Lucinda\NoSQL\Driver](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/Driver.php) methods are relevant for querying:
+Following [Lucinda\NoSQL\Driver](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/Driver.php) methods are relevant for querying:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
 | set | string $key, $value, int $expiration=0 | void | Sets value in store by key, available for seconds defined by expiration (unless later is zero). |
 | get | string $key | mixed | Gets value from store by key. |
 | contains | string $key | bool | Checks if key exists in store. |
-| increment | string $key, int $offset = 1 | int | Increments value in store by existing key and offset, then returns it. Throws [Lucinda\NoSQL\KeyNotFoundException](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/KeyNotFoundException.php) if key doesn't exist in store! |
-| decrement | string $key, int $offset = 1 | int | Decrements value in store by existing key and offset, then returns it. Throws [Lucinda\NoSQL\KeyNotFoundException](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/KeyNotFoundException.php) if key doesn't exist in store! |
-| delete | string $key | void | Deletes value from store by existing key. Throws [Lucinda\NoSQL\KeyNotFoundException](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/KeyNotFoundException.php) if key doesn't exist in store! |
+| increment | string $key, int $offset = 1 | int | Increments value in store by existing key and offset, then returns it. Throws [Lucinda\NoSQL\KeyNotFoundException](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/KeyNotFoundException.php) if key doesn't exist in store! |
+| decrement | string $key, int $offset = 1 | int | Decrements value in store by existing key and offset, then returns it. Throws [Lucinda\NoSQL\KeyNotFoundException](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/KeyNotFoundException.php) if key doesn't exist in store! |
+| delete | string $key | void | Deletes value from store by existing key. Throws [Lucinda\NoSQL\KeyNotFoundException](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/KeyNotFoundException.php) if key doesn't exist in store! |
 | flush | void | void | Clears all values in store. |
 
 Example:
@@ -158,11 +158,11 @@ $driver->delete("i"); // deletes key i from store
 $driver->flush(); // clears all value in store
 ```
 
-If any of above operations fails due to server issues, a [Lucinda\NoSQL\OperationFailedException](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/OperationFailedException.php) is thrown!
+If any of above operations fails due to server issues, a [Lucinda\NoSQL\OperationFailedException](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/OperationFailedException.php) is thrown!
 
 ### Working with driver directly
 
-There may be situations when abstraction provided by [Lucinda\NoSQL\Driver](https://github.com/aherne/php-sql-data-access-api/blob/v3.0.0/src/Driver.php) is not enough and you need to run *specific* operations known only to respective vendor. You can do so by extra **getDriver** method, available unless vendor is APC/APCu:
+There may be situations when abstraction provided by [Lucinda\NoSQL\Driver](https://github.com/aherne/php-nosql-data-access-api/blob/v3.0.0/src/Driver.php) is not enough and you need to run *specific* operations known only to respective vendor. You can do so by extra **getDriver** method, available unless vendor is APC/APCu:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
