@@ -11,4 +11,9 @@
             <tests path="tests" namespace="Test\Lucinda\NoSQL\"/>
         </unit_test>
     </unit_tests>
+  <nosql>
+      <local>
+         <server driver="redis" host="127.0.0.1"/>
+      </local>
+  </nosql>
 </xml>
