@@ -6,4 +6,10 @@ namespace Lucinda\NoSQL;
 */
 interface DataSource
 {
+    /**
+     * Gets driver associated to data source
+     *
+     * @return Driver
+     */
+    public function getDriver(): Driver;
 }

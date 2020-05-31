@@ -17,16 +17,16 @@ class ConnectionSingleton
     private static $instance = null;
     
     /**
-     * @var Server
+     * @var Driver
      */
-    private $database_connection = null;
+    private $driver = null;
     
     /**
      * Registers a data source object encapsulatings connection info.
      *
      * @param DataSource $dataSource
      */
-    public static function setDataSource(DataSource $dataSource)
+    public static function setDataSource(DataSource $dataSource): void
     {
         self::$dataSource = $dataSource;
     }
@@ -36,8 +36,8 @@ class ConnectionSingleton
      *
      * @return Driver
      */
-    public static function getInstance()
-    {        
+    public static function getInstance(): Driver
+    {
         if (!self::$instance) {
             self::$instance = new ConnectionSingleton();
         }
@@ -54,13 +54,9 @@ class ConnectionSingleton
         if (!self::$dataSource) {
             throw new ConnectionException("Datasource not set!");
         }
-        $className = str_replace("DataSource", "Driver", get_class(self::$dataSource));
-        if (!class_exists($className)) {
-            throw new ConnectionException("Class not found: ".$className);
-        }
-        $this->database_connection = new $className();
-        if ($this->database_connection instanceof Server) {
-            $this->database_connection->connect(self::$dataSource);
+        $this->driver = self::$dataSource->getDriver();
+        if ($this->driver instanceof Server) {
+            $this->driver->connect(self::$dataSource);
         }
     }
     
@@ -69,9 +65,9 @@ class ConnectionSingleton
      *
      * @return Driver
      */
-    private function getConnection()
+    private function getConnection(): Driver
     {
-        return $this->database_connection;
+        return $this->driver;
     }
     
     /**
@@ -80,8 +76,8 @@ class ConnectionSingleton
     public function __destruct()
     {
         try {
-            if ($this->database_connection && $this->database_connection instanceof Server) {
-                $this->database_connection->disconnect();
+            if ($this->driver && $this->driver instanceof Server) {
+                $this->driver->disconnect();
             }
         } catch (\Exception $e) {
         }

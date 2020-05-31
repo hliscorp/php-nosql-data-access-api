@@ -1,12 +1,17 @@
 <?php
-namespace Lucinda\NoSQL;
+namespace Lucinda\NoSQL\Vendor\Memcached;
 
-require("MemcachedDataSource.php");
+use \Lucinda\NoSQL\ConfigurationException;
+use \Lucinda\NoSQL\ConnectionException;
+use \Lucinda\NoSQL\OperationFailedException;
+use \Lucinda\NoSQL\KeyNotFoundException;
+use \Lucinda\NoSQL\DataSource;
+use \Lucinda\NoSQL\Vendor\Memcached\DataSource as MemcachedDataSource;
 
 /**
  * Defines memcached implementation of nosql operations.
  */
-class MemcachedDriver implements Driver, Server
+class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
 {
     const PERSISTENT_ID = "pid";
     /**
@@ -15,10 +20,13 @@ class MemcachedDriver implements Driver, Server
     private $connection;
 
     /**
-     * {@inheritDoc}
-     * @see Server::connect()
+     * Connects to nosql provider
+     *
+     * @param DataSource $dataSource
+     * @throws ConfigurationException If developer misconfigures data source.
+     * @throws ConnectionException If connection to database server fails.
      */
-    public function connect(DataSource $dataSource)
+    public function connect(DataSource $dataSource): void
     {
         if (!$dataSource instanceof MemcachedDataSource) {
             throw new ConfigurationException("Invalid data source type");
@@ -49,21 +57,16 @@ class MemcachedDriver implements Driver, Server
         }
         $this->connection = $memcached;
     }
-    
-    /**
-     * {@inheritDoc}
-     * @see Server::disconnect()
-     */
-    public function disconnect()
-    {
-        $this->connection->quit();
-    }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::set()
+     * Sets value to store that will be accessible by key.
+     *
+     * @param string $key Key based on which value will be accessible.
+     * @param mixed $value Value to store.
+     * @param integer $expiration Time to live in seconds until expiration (0: never expires)
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function set($key, $value, $expiration=0)
+    public function set(string $key, $value, int $expiration=0): void
     {
         $result = $this->connection->set($key, $value, $expiration);
         if (!$result) {
@@ -73,10 +76,26 @@ class MemcachedDriver implements Driver, Server
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::get()
+     * Checks if key to access value from exists.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return boolean
      */
-    public function get($key)
+    public function contains(string $key): bool
+    {
+        $this->connection->get($key);
+        return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode()?false:true);
+    }
+
+    /**
+     * Gets value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @return mixed Resulting value.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function get(string $key)
     {
         $result = $this->connection->get($key);
         if ($result===false) {
@@ -89,39 +108,17 @@ class MemcachedDriver implements Driver, Server
         }
         return $result;
     }
-    
-    /**
-     * {@inheritDoc}
-     * @see Driver::contains()
-     */
-    public function contains($key)
-    {
-        $this->connection->get($key);
-        return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode()?false:true);
-    }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::delete()
+     * Increments a counter by key.
+     *
+     * @param string $key Key based on which counter will be accessible from
+     * @param integer $offset Incrementation step.
+     * @return integer Incremented value (value of offset if key originally did not exist)
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function delete($key)
-    {
-        $result = $this->connection->delete($key);
-        if (!$result) {
-            $resultCode = $this->connection->getResultCode();
-            if (\Memcached::RES_NOTFOUND == $resultCode) {
-                throw new KeyNotFoundException($key);
-            } else {
-                throw new OperationFailedException((string) $resultCode);
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see Driver::increment()
-     */
-    public function increment($key, $offset = 1)
+    public function increment(string $key, int $offset = 1): int
     {
         $result = $this->connection->increment($key, $offset);
         if ($result===false) {
@@ -136,10 +133,15 @@ class MemcachedDriver implements Driver, Server
     }
 
     /**
-     * {@inheritDoc}
-     * @see Driver::decrement()
+     * Decrements a counter by key.
+     *
+     * @param string $key Key based on which counter will be accessible from
+     * @param integer $offset Decrementation step.
+     * @return integer Decremented value (value of offset if key originally did not exist)
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function decrement($key, $offset = 1)
+    public function decrement(string $key, int $offset = 1): int
     {
         $result = $this->connection->decrement($key, $offset);
         if ($result===false) {
@@ -152,12 +154,32 @@ class MemcachedDriver implements Driver, Server
         }
         return $result;
     }
+
+    /**
+     * Deletes value by key.
+     *
+     * @param string $key Key based on which value will be searched.
+     * @throws KeyNotFoundException If key doesn't exist in store.
+     * @throws OperationFailedException If operation didn't succeed.
+     */
+    public function delete(string $key): void
+    {
+        $result = $this->connection->delete($key);
+        if (!$result) {
+            $resultCode = $this->connection->getResultCode();
+            if (\Memcached::RES_NOTFOUND == $resultCode) {
+                throw new KeyNotFoundException($key);
+            } else {
+                throw new OperationFailedException((string) $resultCode);
+            }
+        }
+    }
     
     /**
-     * {@inheritDoc}
-     * @see Driver::flush()
+     * Flushes DB of all keys.
+     * @throws OperationFailedException If operation didn't succeed.
      */
-    public function flush()
+    public function flush(): void
     {
         $result = $this->connection->flush();
         if (!$result) {
@@ -171,8 +193,16 @@ class MemcachedDriver implements Driver, Server
      *
      * @return \Memcached
      */
-    public function getDriver()
+    public function getDriver(): \Memcached
     {
         return $this->connection;
+    }
+
+    /**
+     * Disconnects from nosql provider
+     */
+    public function disconnect(): void
+    {
+        $this->connection->quit();
     }
 }

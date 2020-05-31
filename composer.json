@@ -5,6 +5,19 @@
     "keywords": ["nosql","driver","redis","couchbase","memcache","memcached","apc","apcu"],
     "homepage": "http://www.lucinda-framework.com/nosql-data-access",
     "license": "MIT",
+    "require": {
+        "php": "^7.1",
+        "ext-SimpleXML": "*"
+    },
+    "require-dev": {
+        "lucinda/unit-testing": "^1.0"
+    },
+    "autoload": {
+    	"psr-4": {
+        	"Lucinda\\NoSQL\\": "src/",
+        	"Lucinda\\NoSQL\\Vendor\\": "drivers/"
+    	}
+    },
     "authors": [
         {
             "name": "Lucian Popescu",
