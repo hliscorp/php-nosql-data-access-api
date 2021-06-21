@@ -182,7 +182,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      */
     public function delete(string $key): void
     {
-        $result = $this->connection->delete($key);
+        $result = $this->connection->del($key);
         if (!$result) {
             if (!$this->connection->exists($key)) {
                 throw new KeyNotFoundException($key);
