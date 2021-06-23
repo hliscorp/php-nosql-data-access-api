@@ -15,7 +15,9 @@
     "autoload": {
     	"psr-4": {
         	"Lucinda\\NoSQL\\": "src/",
-        	"Lucinda\\NoSQL\\Vendor\\": "drivers/"
+        	"Lucinda\\NoSQL\\Vendor\\": "drivers/",
+                "Test\\Lucinda\\NoSQL\\": "tests/",
+                "Test\\Lucinda\\NoSQL\\Vendor\\": "tests_drivers/"
     	}
     },
     "authors": [
