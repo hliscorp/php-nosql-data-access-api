@@ -32,7 +32,7 @@ interface Driver
      * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
-    public function get(string $key);
+    public function get(string $key): mixed;
     
     /**
      * Increments a counter by key.

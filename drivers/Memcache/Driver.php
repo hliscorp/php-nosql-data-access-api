@@ -16,7 +16,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     /**
      * @var \Memcache
      */
-    private $connection;
+    private \Memcache $connection;
 
     /**
      * Connects to nosql provider
@@ -83,7 +83,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         $result = $this->connection->get($key); // driver makes it impossible to distinguish between false and failure
         if ($result===false) {
@@ -99,7 +99,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @param integer $offset Incrementation step.
      * @return integer Incremented value (value of offset if key originally did not exist)
      * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
      */
     public function increment(string $key, int $offset = 1): int
     {
@@ -117,7 +116,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @param integer $offset Decrementation step.
      * @return integer Decremented value (value of offset if key originally did not exist)
      * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
      */
     public function decrement(string $key, int $offset = 1): int
     {
@@ -133,7 +131,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      *
      * @param string $key Key based on which value will be searched.
      * @throws KeyNotFoundException If key doesn't exist in store.
-     * @throws OperationFailedException If operation didn't succeed.
      */
     public function delete(string $key): void
     {

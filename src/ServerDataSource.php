@@ -6,9 +6,9 @@ namespace Lucinda\NoSQL;
  */
 abstract class ServerDataSource
 {
-    private $servers = array();
-    private $timeout;
-    private $persistent = false;
+    private array $servers = array();
+    private int $timeout;
+    private bool $persistent = false;
 
     /**
      * ServerDataSource constructor.

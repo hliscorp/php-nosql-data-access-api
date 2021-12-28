@@ -15,13 +15,13 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     /**
      * @var \CouchbaseBucket
      */
-    private $bucket;
+    private \CouchbaseBucket $bucket;
 
     /**
      * Connects to nosql provider
      *
      * @param DataSource $dataSource
-     * @throws ConfigurationException If developer misconfigures data source.
+     * @throws ConfigurationException If developer mis-configures data source.
      * @throws ConnectionException If connection to database server fails.
      */
     public function connect(DataSource $dataSource): void
@@ -95,7 +95,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         try {
             $result = $this->bucket->get($key);

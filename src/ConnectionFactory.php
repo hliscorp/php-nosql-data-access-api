@@ -11,18 +11,18 @@ class ConnectionFactory
      *
      * @var Driver[string]
      */
-    private static $instances;
+    private static array $instances;
     
     /**
      * Stores registered data sources.
      * @var DataSource[string]
      */
-    private static $dataSources;
+    private static array $dataSources;
     
     /**
      * @var Driver
      */
-    private $driver = null;
+    private Driver $driver;
     
     /**
      * Registers a data source object encapsulatings connection info based on unique server identifier.
@@ -85,7 +85,7 @@ class ConnectionFactory
     public function __destruct()
     {
         try {
-            if ($this->driver && $this->driver instanceof Server) {
+            if ($this->driver instanceof Server) {
                 $this->driver->disconnect();
             }
         } catch (\Exception $e) {

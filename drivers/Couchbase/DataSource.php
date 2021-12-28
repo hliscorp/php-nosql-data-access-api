@@ -8,13 +8,13 @@ use Lucinda\NoSQL\ConfigurationException;
 */
 class DataSource implements \Lucinda\NoSQL\DataSource
 {
-    private $host;
+    private string $host;
     
-    private $userName;
-    private $password;
+    private string $userName;
+    private string $password;
     
-    private $bucketName;
-    private $bucketPassword;
+    private string $bucketName;
+    private string $bucketPassword;
 
 
     /**

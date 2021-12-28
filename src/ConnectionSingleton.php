@@ -7,22 +7,22 @@ namespace Lucinda\NoSQL;
 class ConnectionSingleton
 {
     /**
-     * @var DataSource
+     * @var ?DataSource
      */
-    private static $dataSource = null;
+    private static ?DataSource $dataSource = null;
     
     /**
-     * @var ConnectionSingleton
+     * @var ?ConnectionSingleton
      */
-    private static $instance = null;
+    private static ?ConnectionSingleton $instance = null;
     
     /**
      * @var Driver
      */
-    private $driver = null;
+    private Driver $driver;
     
     /**
-     * Registers a data source object encapsulatings connection info.
+     * Registers a data source object encapsulating connection info.
      *
      * @param DataSource $dataSource
      */
@@ -47,7 +47,7 @@ class ConnectionSingleton
     /**
      * Connects to database automatically.
      *
-     * @throws ConnectionException
+     * @throws ConnectionException|ConfigurationException
      */
     private function __construct()
     {
@@ -76,7 +76,7 @@ class ConnectionSingleton
     public function __destruct()
     {
         try {
-            if ($this->driver && $this->driver instanceof Server) {
+            if ($this->driver instanceof Server) {
                 $this->driver->disconnect();
             }
         } catch (\Exception $e) {

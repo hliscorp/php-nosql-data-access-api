@@ -18,7 +18,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     /**
      * @var \Redis
      */
-    private $connection;
+    private \Redis $connection;
 
     /**
      * Connects to nosql provider
@@ -112,7 +112,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         $result = $this->connection->get($key);
         if ($result === false) {

@@ -21,7 +21,7 @@ class Wrapper
      * @param string $developmentEnvironment
      * @throws ConfigurationException If XML is improperly configured.
      */
-    public function __construct(\SimpleXMLElement $xml, $developmentEnvironment)
+    public function __construct(\SimpleXMLElement $xml, string $developmentEnvironment)
     {
         $xml = $xml->nosql->{$developmentEnvironment};
         if (!empty($xml)) {
