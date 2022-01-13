@@ -44,7 +44,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
                 foreach ($servers as $name=>$port) {
                     $serverList[] = $name.":".$port;
                 }
-                $redis = new \RedisCluster(null, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
+                $redis = new \RedisCluster(null, $serverList, (float) $dataSource->getTimeout(), null, $dataSource->isPersistent());
             } catch (\RedisClusterException $e) {
                 throw new ConnectionException($e->getMessage());
             }
@@ -54,12 +54,12 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
                 $host = key($servers);
                 $redis = new \Redis();
                 if ($dataSource->isPersistent()) {
-                    $result = $redis->pconnect($host, $port, $dataSource->getTimeout());
+                    $result = $redis->pconnect($host, $port, (float) $dataSource->getTimeout());
                     if (!$result) {
                         throw new ConnectionException();
                     }
                 } else {
-                    $result = $redis->connect($host, $port, $dataSource->getTimeout());
+                    $result = $redis->connect($host, $port, (float) $dataSource->getTimeout());
                     if (!$result) {
                         throw new ConnectionException();
                     }
