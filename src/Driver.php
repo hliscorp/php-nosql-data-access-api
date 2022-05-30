@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\NoSQL;
 
 /**
@@ -23,7 +24,7 @@ interface Driver
      * @return boolean
      */
     public function contains(string $key): bool;
-    
+
     /**
      * Gets value by key.
      *
@@ -33,7 +34,7 @@ interface Driver
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function get(string $key): mixed;
-    
+
     /**
      * Increments a counter by key.
      *
@@ -44,7 +45,7 @@ interface Driver
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function increment(string $key, int $offset = 1): int;
-    
+
     /**
      * Decrements a counter by key.
      *
@@ -64,7 +65,7 @@ interface Driver
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function delete(string $key): void;
-    
+
     /**
      * Flushes DB of all keys.
      * @throws OperationFailedException If operation didn't succeed.

@@ -1,12 +1,13 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\Memcache;
 
-use \Lucinda\NoSQL\ConfigurationException;
-use \Lucinda\NoSQL\ConnectionException;
-use \Lucinda\NoSQL\OperationFailedException;
-use \Lucinda\NoSQL\KeyNotFoundException;
-use \Lucinda\NoSQL\DataSource;
-use \Lucinda\NoSQL\Vendor\Memcache\DataSource as MemcacheDataSource;
+use Lucinda\NoSQL\ConfigurationException;
+use Lucinda\NoSQL\ConnectionException;
+use Lucinda\NoSQL\OperationFailedException;
+use Lucinda\NoSQL\KeyNotFoundException;
+use Lucinda\NoSQL\DataSource;
+use Lucinda\NoSQL\Vendor\Memcache\DataSource as MemcacheDataSource;
 
 /**
  * Defines memcache implementation of nosql operations.
@@ -21,7 +22,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     /**
      * Connects to nosql provider
      *
-     * @param DataSource $dataSource
+     * @param MemcacheDataSource $dataSource
      * @throws ConfigurationException If developer misconfigures data source.
      * @throws ConnectionException If connection to database server fails.
      */
@@ -36,7 +37,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new ConfigurationException("No servers are set!");
         }
         foreach ($servers as $host=>$port) {
-            $memcache->addServer($host, $port, $dataSource->isPersistent(), 1, ($dataSource->getTimeout()?$dataSource->getTimeout():1));
+            $memcache->addServer($host, $port, $dataSource->isPersistent(), 1, ($dataSource->getTimeout() ? $dataSource->getTimeout() : 1));
         }
         // check connections
         $stats = $memcache->getExtendedStats();
@@ -72,7 +73,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      */
     public function contains(string $key): bool
     {
-        return ($this->connection->get($key)!==false?true:false);
+        return $this->connection->get($key)!==false;
     }
 
     /**
@@ -151,7 +152,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new OperationFailedException();
         }
     }
-    
+
     /**
      * Gets a pointer to native wrapped object for advanced operations.
      *

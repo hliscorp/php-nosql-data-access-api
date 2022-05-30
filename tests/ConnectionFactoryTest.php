@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\NoSQL;
 
 use Lucinda\NoSQL\ConnectionFactory;

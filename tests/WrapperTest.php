@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\NoSQL;
 
 use Lucinda\NoSQL\Wrapper;
@@ -17,7 +18,7 @@ class WrapperTest
         } catch (ConfigurationException $e) {
             $results[] = new Result(false, "tested wrapping");
         }
-        
+
         $connection = ConnectionSingleton::getInstance();
         $results[] = new Result(($connection->contains("asdf")===false), "tested binding");
         return $results;

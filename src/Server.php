@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\NoSQL;
 
 /**
@@ -14,7 +15,7 @@ interface Server
      * @throws ConnectionException If connection to database server fails.
      */
     public function connect(DataSource $dataSource): void;
-    
+
     /**
      * Disconnects from nosql provider
      */

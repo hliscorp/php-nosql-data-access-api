@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\NoSQL;
 
 use Lucinda\NoSQL\Vendor\APC\DataSource as APCDataSource;
@@ -37,7 +38,7 @@ class Wrapper
                     ConnectionFactory::setDataSource((string) $element["name"], $this->getDataSource($element));
                 }
             } else {
-                ConnectionSingleton::setDataSource($this->getDataSource($xml["server"]));
+                ConnectionFactory::setDataSource("", $this->getDataSource($xml["server"]));
             }
         }
     }
@@ -58,25 +59,18 @@ class Wrapper
         switch ($driver) {
             case "couchbase":
                 return new CouchbaseDataSource($databaseInfo);
-                break;
             case "memcache":
                 return new MemcacheDataSource($databaseInfo);
-                break;
             case "memcached":
                 return new MemcachedDataSource($databaseInfo);
-                break;
             case "redis":
                 return new RedisDataSource($databaseInfo);
-                break;
             case "apc":
                 return new APCDataSource();
-                break;
             case "apcu":
                 return new APCuDataSource();
-                break;
             default:
                 throw new ConfigurationException("NoSQL driver not supported: " . $driver);
-                break;
         }
     }
 }

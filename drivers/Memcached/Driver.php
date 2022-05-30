@@ -1,19 +1,20 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\Memcached;
 
-use \Lucinda\NoSQL\ConfigurationException;
-use \Lucinda\NoSQL\ConnectionException;
-use \Lucinda\NoSQL\OperationFailedException;
-use \Lucinda\NoSQL\KeyNotFoundException;
-use \Lucinda\NoSQL\DataSource;
-use \Lucinda\NoSQL\Vendor\Memcached\DataSource as MemcachedDataSource;
+use Lucinda\NoSQL\ConfigurationException;
+use Lucinda\NoSQL\ConnectionException;
+use Lucinda\NoSQL\OperationFailedException;
+use Lucinda\NoSQL\KeyNotFoundException;
+use Lucinda\NoSQL\DataSource;
+use Lucinda\NoSQL\Vendor\Memcached\DataSource as MemcachedDataSource;
 
 /**
  * Defines memcached implementation of nosql operations.
  */
 class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
 {
-    const PERSISTENT_ID = "pid";
+    public const PERSISTENT_ID = "pid";
     /**
      * @var \Memcached
      */
@@ -22,22 +23,14 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     /**
      * Connects to nosql provider
      *
-     * @param DataSource $dataSource
+     * @param MemcachedDataSource $dataSource
      * @throws ConfigurationException If developer misconfigures data source.
      * @throws ConnectionException If connection to database server fails.
      */
     public function connect(DataSource $dataSource): void
     {
-        if (!$dataSource instanceof MemcachedDataSource) {
-            throw new ConfigurationException("Invalid data source type");
-        }
-        
-        $servers = $dataSource->getServers();
-        if (empty($servers)) {
-            throw new ConfigurationException("No servers are set!");
-        }
-
-        $memcached = ($dataSource->isPersistent()?new \Memcached(self::PERSISTENT_ID):new \Memcached());
+        $servers = $this->getServers($dataSource);
+        $memcached = ($dataSource->isPersistent() ? new \Memcached(self::PERSISTENT_ID) : new \Memcached());
         $memcached->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
         if ($dataSource->getTimeout()) {
             $memcached->setOption(\Memcached::OPT_RECV_TIMEOUT, $dataSource->getTimeout());
@@ -56,6 +49,27 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             }
         }
         $this->connection = $memcached;
+    }
+
+    /**
+     * Gets servers to connect to
+     *
+     * @param MemcachedDataSource $dataSource
+     * @return array<string,int>
+     * @throws ConfigurationException
+     */
+    private function getServers(DataSource $dataSource): array
+    {
+        if (!$dataSource instanceof MemcachedDataSource) {
+            throw new ConfigurationException("Invalid data source type");
+        }
+
+        $servers = $dataSource->getServers();
+        if (empty($servers)) {
+            throw new ConfigurationException("No servers are set!");
+        }
+
+        return $servers;
     }
 
     /**
@@ -84,7 +98,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     public function contains(string $key): bool
     {
         $this->connection->get($key);
-        return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode()?false:true);
+        return (\Memcached::RES_NOTFOUND == $this->connection->getResultCode() ? false : true);
     }
 
     /**
@@ -174,7 +188,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             }
         }
     }
-    
+
     /**
      * Flushes DB of all keys.
      * @throws OperationFailedException If operation didn't succeed.
@@ -187,7 +201,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new OperationFailedException((string) $resultCode);
         }
     }
-    
+
     /**
      * Gets a pointer to native wrapped object for advanced operations.
      *

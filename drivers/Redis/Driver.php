@@ -1,12 +1,13 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\Redis;
 
-use \Lucinda\NoSQL\ConfigurationException;
-use \Lucinda\NoSQL\ConnectionException;
-use \Lucinda\NoSQL\OperationFailedException;
-use \Lucinda\NoSQL\KeyNotFoundException;
-use \Lucinda\NoSQL\DataSource;
-use \Lucinda\NoSQL\Vendor\Redis\DataSource as RedisDataSource;
+use Lucinda\NoSQL\ConfigurationException;
+use Lucinda\NoSQL\ConnectionException;
+use Lucinda\NoSQL\OperationFailedException;
+use Lucinda\NoSQL\KeyNotFoundException;
+use Lucinda\NoSQL\DataSource;
+use Lucinda\NoSQL\Vendor\Redis\DataSource as RedisDataSource;
 
 /**
  * Defines redis implementation of nosql operations.
@@ -23,21 +24,14 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
     /**
      * Connects to nosql provider
      *
-     * @param DataSource $dataSource
+     * @param RedisDataSource $dataSource
      * @throws ConfigurationException If developer misconfigures data source.
      * @throws ConnectionException If connection to database server fails.
      */
     public function connect(DataSource $dataSource): void
     {
-        if (!$dataSource instanceof RedisDataSource) {
-            throw new ConfigurationException("Invalid data source type");
-        }
-        $servers = $dataSource->getServers();
-        if (empty($servers)) {
-            throw new ConfigurationException("No servers are set!");
-        }
+        $servers = $this->getServers($dataSource);
         $redis = null;
-        
         if (sizeof($servers)>1) {
             try {
                 $serverList = array();
@@ -68,8 +62,29 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
                 throw new ConnectionException($e->getMessage());
             }
         }
-        
+
         $this->connection = $redis;
+    }
+
+    /**
+     * Gets servers to connect to
+     *
+     * @param RedisDataSource $dataSource
+     * @return array<string,int>
+     * @throws ConfigurationException
+     */
+    private function getServers(DataSource $dataSource): array
+    {
+        if (!$dataSource instanceof RedisDataSource) {
+            throw new ConfigurationException("Invalid data source type");
+        }
+
+        $servers = $dataSource->getServers();
+        if (empty($servers)) {
+            throw new ConfigurationException("No servers are set!");
+        }
+
+        return $servers;
     }
 
     /**
@@ -101,7 +116,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      */
     public function contains(string $key): bool
     {
-        return $this->connection->exists($key);
+        return (bool) $this->connection->exists($key);
     }
 
     /**
@@ -131,7 +146,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @param string $key Key based on which counter will be accessible from
      * @param integer $offset Incrementation step.
      * @return integer Incremented value (value of offset if key originally did not exist)
-     * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function increment(string $key, int $offset=1): int
@@ -155,7 +169,6 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
      * @param string $key Key based on which counter will be accessible from
      * @param integer $offset Decrementation step.
      * @return integer Decremented value (value of offset if key originally did not exist)
-     * @throws KeyNotFoundException If key doesn't exist in store.
      * @throws OperationFailedException If operation didn't succeed.
      */
     public function decrement(string $key, int $offset=1): int
@@ -191,7 +204,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             }
         }
     }
-    
+
     /**
      * Flushes DB of all keys.
      * @throws OperationFailedException If operation didn't succeed.
@@ -203,7 +216,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new OperationFailedException($this->connection->getLastError());
         }
     }
-    
+
     /**
      * Gets a pointer to native wrapped object for advanced operations.
      *

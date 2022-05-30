@@ -1,11 +1,12 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\Couchbase;
 
-use \Lucinda\NoSQL\ConfigurationException;
-use \Lucinda\NoSQL\ConnectionException;
-use \Lucinda\NoSQL\OperationFailedException;
-use \Lucinda\NoSQL\KeyNotFoundException;
-use \Lucinda\NoSQL\DataSource;
+use Lucinda\NoSQL\ConfigurationException;
+use Lucinda\NoSQL\ConnectionException;
+use Lucinda\NoSQL\OperationFailedException;
+use Lucinda\NoSQL\KeyNotFoundException;
+use Lucinda\NoSQL\DataSource;
 
 /**
  * Defines couchbase implementation of nosql operations.
@@ -32,14 +33,14 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
         if (!$dataSource->getHost() || !$dataSource->getBucketName() || !$dataSource->getUserName() || !$dataSource->getPassword()) {
             throw new ConfigurationException("Insufficient settings");
         }
-        
+
         try {
             $authenticator = new \Couchbase\PasswordAuthenticator();
             $authenticator->username($dataSource->getUserName())->password($dataSource->getPassword());
-            
+
             $cluster = new \CouchbaseCluster("couchbase://".$dataSource->getHost());
             $cluster->authenticate($authenticator);
-            
+
             if ($dataSource->getBucketPassword()) {
                 $this->bucket = $cluster->openBucket($dataSource->getBucketName(), $dataSource->getBucketPassword());
             } else {
@@ -174,7 +175,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             }
         }
     }
-    
+
     /**
      * Flushes DB of all keys.
      * @throws OperationFailedException If operation didn't succeed.
@@ -187,7 +188,7 @@ class Driver implements \Lucinda\NoSQL\Driver, \Lucinda\NoSQL\Server
             throw new OperationFailedException($e->getMessage());
         }
     }
-    
+
     /**
      * Gets a pointer to native wrapped object for advanced operations.
      *

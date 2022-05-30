@@ -1,8 +1,9 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\APC;
 
-use \Lucinda\NoSQL\OperationFailedException;
-use \Lucinda\NoSQL\KeyNotFoundException;
+use Lucinda\NoSQL\OperationFailedException;
+use Lucinda\NoSQL\KeyNotFoundException;
 
 /**
  * Defines APC implementation of nosql operations.
@@ -19,7 +20,7 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function set(string $key, $value, int $expiration=0): void
     {
-        $result = apc_store($key, $value, $expiration);
+        $result = \apc_store($key, $value, $expiration);
         if (!$result) {
             throw new OperationFailedException();
         }
@@ -33,7 +34,7 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function contains(string $key): bool
     {
-        return apc_exists($key);
+        return \apc_exists($key);
     }
 
     /**
@@ -46,9 +47,9 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function get(string $key): mixed
     {
-        $result = apc_fetch($key);
+        $result = \apc_fetch($key);
         if ($result===false) {
-            if (!apc_exists($key)) {
+            if (!\apc_exists($key)) {
                 throw new KeyNotFoundException($key);
             } else {
                 throw new OperationFailedException();
@@ -68,9 +69,9 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function increment(string $key, int $offset = 1): int
     {
-        $result = apc_inc($key, $offset);
+        $result = \apc_inc($key, $offset);
         if ($result===false) {
-            if (!apc_exists($key)) {
+            if (!\apc_exists($key)) {
                 throw new KeyNotFoundException($key);
             } else {
                 throw new OperationFailedException();
@@ -90,9 +91,9 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function decrement(string $key, int $offset = 1): int
     {
-        $result = apc_dec($key, $offset);
+        $result = \apc_dec($key, $offset);
         if ($result===false) {
-            if (!apc_exists($key)) {
+            if (!\apc_exists($key)) {
                 throw new KeyNotFoundException($key);
             } else {
                 throw new OperationFailedException();
@@ -110,7 +111,7 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function delete(string $key): void
     {
-        $result = apc_delete($key);
+        $result = \apc_delete($key);
         if (!$result) {
             if (!apc_exists($key)) {
                 throw new KeyNotFoundException($key);
@@ -119,12 +120,12 @@ class Driver implements \Lucinda\NoSQL\Driver
             }
         }
     }
-    
+
     /**
      * Flushes DB of all keys.
      */
     public function flush(): void
     {
-        apc_clear_cache(); // returns true always
+        \apc_clear_cache(); // returns true always
     }
 }

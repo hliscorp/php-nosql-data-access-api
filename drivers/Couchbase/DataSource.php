@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\Couchbase;
 
 use Lucinda\NoSQL\ConfigurationException;
@@ -9,10 +10,10 @@ use Lucinda\NoSQL\ConfigurationException;
 class DataSource implements \Lucinda\NoSQL\DataSource
 {
     private string $host;
-    
+
     private string $userName;
     private string $password;
-    
+
     private string $bucketName;
     private string $bucketPassword;
 
@@ -49,7 +50,7 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     {
         return $this->host;
     }
-    
+
     /**
      * Gets value of username necessary for connection credentials.
      *
@@ -59,8 +60,8 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     {
         return $this->userName;
     }
-    
-    
+
+
     /**
      * Gets value of password necessary for connection credentials.
      *
@@ -70,7 +71,7 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     {
         return $this->password;
     }
-    
+
     /**
      * Gets name of bucket that holds your key-value store.
      *
@@ -80,7 +81,7 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     {
         return $this->bucketName;
     }
-    
+
     /**
      * Gets password necessary to access bucket
      *

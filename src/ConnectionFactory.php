@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\NoSQL;
 
 /**
@@ -9,21 +10,21 @@ class ConnectionFactory
     /**
      * Stores open connections.
      *
-     * @var Driver[string]
+     * @var array<string,Driver>
      */
     private static array $instances;
-    
+
     /**
      * Stores registered data sources.
-     * @var DataSource[string]
+     * @var array<string,DataSource>
      */
     private static array $dataSources;
-    
+
     /**
      * @var Driver
      */
     private Driver $driver;
-    
+
     /**
      * Registers a data source object encapsulatings connection info based on unique server identifier.
      *
@@ -34,7 +35,7 @@ class ConnectionFactory
     {
         self::$dataSources[$serverName] = $dataSource;
     }
-    
+
     /**
      * Opens connection to database server (if not already open) according to DataSource and
      * returns an object of that connection to delegate operations to.
@@ -68,7 +69,7 @@ class ConnectionFactory
             $this->driver->connect(self::$dataSources[$serverName]);
         }
     }
-    
+
     /**
      * Internal utility to get connection.
      *
@@ -78,7 +79,7 @@ class ConnectionFactory
     {
         return $this->driver;
     }
-    
+
     /**
      * Disconnects from database server automatically.
      */

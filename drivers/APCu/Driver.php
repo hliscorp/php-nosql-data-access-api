@@ -1,8 +1,9 @@
 <?php
+
 namespace Lucinda\NoSQL\Vendor\APCu;
 
-use \Lucinda\NoSQL\OperationFailedException;
-use \Lucinda\NoSQL\KeyNotFoundException;
+use Lucinda\NoSQL\OperationFailedException;
+use Lucinda\NoSQL\KeyNotFoundException;
 
 /**
  * Defines APCu implementation of nosql operations.
@@ -19,7 +20,7 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function set(string $key, $value, int $expiration=0): void
     {
-        $result = apcu_store($key, $value, $expiration);
+        $result = \apcu_store($key, $value, $expiration);
         if (!$result) {
             throw new OperationFailedException();
         }
@@ -33,9 +34,9 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function contains(string $key): bool
     {
-        return apcu_exists($key);
+        return \apcu_exists($key);
     }
-    
+
     /**
      * Gets value by key.
      *
@@ -46,9 +47,9 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function get(string $key): mixed
     {
-        $result = apcu_fetch($key);
+        $result = \apcu_fetch($key);
         if ($result===false) {
-            if (!apcu_exists($key)) {
+            if (!\apcu_exists($key)) {
                 throw new KeyNotFoundException($key);
             } else {
                 throw new OperationFailedException();
@@ -56,7 +57,7 @@ class Driver implements \Lucinda\NoSQL\Driver
         }
         return $result;
     }
-    
+
     /**
      * Increments a counter by key.
      *
@@ -67,13 +68,13 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function increment(string $key, int $offset = 1): int
     {
-        $result = apcu_inc($key, $offset);
+        $result = \apcu_inc($key, $offset);
         if ($result===false) {
             throw new OperationFailedException();
         }
         return $result;
     }
-    
+
     /**
      * Decrements a counter by key.
      *
@@ -84,7 +85,7 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function decrement(string $key, int $offset = 1): int
     {
-        $result = apcu_dec($key, $offset);
+        $result = \apcu_dec($key, $offset);
         if ($result===false) {
             throw new OperationFailedException();
         }
@@ -100,21 +101,21 @@ class Driver implements \Lucinda\NoSQL\Driver
      */
     public function delete(string $key): void
     {
-        $result = apcu_delete($key);
+        $result = \apcu_delete($key);
         if (!$result) {
-            if (!apcu_exists($key)) {
+            if (!\apcu_exists($key)) {
                 throw new KeyNotFoundException($key);
             } else {
                 throw new OperationFailedException();
             }
         }
     }
-    
+
     /**
      * Flushes DB of all keys.
      */
     public function flush(): void
     {
-        apcu_clear_cache(); // returns true always
+        \apcu_clear_cache(); // returns true always
     }
 }

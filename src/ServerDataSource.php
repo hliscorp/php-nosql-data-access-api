@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\NoSQL;
 
 /**
@@ -6,6 +7,9 @@ namespace Lucinda\NoSQL;
  */
 abstract class ServerDataSource
 {
+    /**
+     * @var array<string,int>
+     */
     private array $servers = array();
     private int $timeout;
     private bool $persistent = false;
@@ -37,13 +41,13 @@ abstract class ServerDataSource
         $this->timeout = (int) $databaseInfo["timeout"];
 
         // set persistent
-        $this->persistent = ((string) $databaseInfo["persistent"]?true:false);
+        $this->persistent = (bool)((string)$databaseInfo["persistent"]);
     }
 
     /**
      * Gets server host:port combinations to connect to
      *
-     * @return array
+     * @return array<string,int>
      */
     public function getServers(): array
     {
@@ -69,7 +73,7 @@ abstract class ServerDataSource
     {
         return $this->persistent;
     }
-    
+
     /**
      * Gets default port specific to no-sql vendor.
      *
