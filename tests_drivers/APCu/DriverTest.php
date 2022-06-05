@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\NoSQL\Vendor\APCu;
 
 use Lucinda\NoSQL\Vendor\APCu\DataSource;

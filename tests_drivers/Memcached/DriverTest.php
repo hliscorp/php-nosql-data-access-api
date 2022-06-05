@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\NoSQL\Vendor\Memcached;
 
 use Lucinda\NoSQL\ConnectionException;
@@ -11,9 +12,13 @@ class DriverTest
 
     public function __construct()
     {
-        $this->dataSource = new \Lucinda\NoSQL\Vendor\Memcached\DataSource(\simplexml_load_string('
+        $this->dataSource = new \Lucinda\NoSQL\Vendor\Memcached\DataSource(
+            \simplexml_load_string(
+                '
             <server driver="memcached" host="127.0.0.1"/>
-        '));
+        '
+            )
+        );
         $this->object = $this->dataSource->getDriver();
     }
 

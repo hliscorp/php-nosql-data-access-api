@@ -10,9 +10,13 @@ class ConnectionFactoryTest
 {
     public function setDataSource()
     {
-        $dataSource = new DataSource(\simplexml_load_string('
+        $dataSource = new DataSource(
+            \simplexml_load_string(
+                '
         <server driver="redis" host="127.0.0.1"/>
-        '));
+        '
+            )
+        );
         ConnectionFactory::setDataSource("local", $dataSource);
         return new Result(true);
     }

@@ -6,7 +6,7 @@ use Lucinda\NoSQL\ConfigurationException;
 
 /**
  * Encapsulates couchbase server connection & bucket data.
-*/
+ */
 class DataSource implements \Lucinda\NoSQL\DataSource
 {
     private string $host;
@@ -21,7 +21,7 @@ class DataSource implements \Lucinda\NoSQL\DataSource
     /**
      * Gets couchbase server info from XML
      *
-     * @param \SimpleXMLElement $databaseInfo
+     * @param  \SimpleXMLElement $databaseInfo
      * @throws ConfigurationException
      */
     public function __construct(\SimpleXMLElement $databaseInfo)

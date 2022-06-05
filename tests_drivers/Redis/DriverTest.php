@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\NoSQL\Vendor\Redis;
 
 use Lucinda\NoSQL\ConnectionException;
@@ -11,9 +12,13 @@ class DriverTest
 
     public function __construct()
     {
-        $this->dataSource = new \Lucinda\NoSQL\Vendor\Redis\DataSource(\simplexml_load_string('
+        $this->dataSource = new \Lucinda\NoSQL\Vendor\Redis\DataSource(
+            \simplexml_load_string(
+                '
             <server driver="redis" host="127.0.0.1"/>
-        '));
+        '
+            )
+        );
         $this->object = $this->dataSource->getDriver();
     }
 
@@ -71,13 +76,13 @@ class DriverTest
         $this->object->flush();
         return new Result(!$this->object->contains("unit_test"));
     }
-        
+
 
     public function getDriver()
     {
         return new Result($this->object->getDriver() instanceof \Redis);
     }
-        
+
 
     public function disconnect()
     {

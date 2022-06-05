@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\NoSQL\Vendor\Couchbase;
 
 use Lucinda\NoSQL\ConnectionException;
@@ -11,9 +12,13 @@ class DriverTest
 
     public function __construct()
     {
-        $this->dataSource = new \Lucinda\NoSQL\Vendor\Couchbase\DataSource(\simplexml_load_string('
+        $this->dataSource = new \Lucinda\NoSQL\Vendor\Couchbase\DataSource(
+            \simplexml_load_string(
+                '
             <server driver="couchbase" host="127.0.0.1" username="test" password="me" bucket_name="test_bucket" bucket_password="test_password"/>
-        '));
+        '
+            )
+        );
         $this->object = $this->dataSource->getDriver();
     }
 
