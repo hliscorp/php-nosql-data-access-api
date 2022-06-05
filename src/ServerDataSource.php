@@ -16,7 +16,8 @@ abstract class ServerDataSource
 
     /**
      * ServerDataSource constructor.
-     * @param \SimpleXMLElement $databaseInfo
+     *
+     * @param  \SimpleXMLElement $databaseInfo
      * @throws ConfigurationException
      */
     public function __construct(\SimpleXMLElement $databaseInfo)

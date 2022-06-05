@@ -18,8 +18,8 @@ class Wrapper
     /**
      * Binds NoSQL Data Access API to XML based on development environment and sets DataSource for later querying
      *
-     * @param \SimpleXMLElement $xml
-     * @param string $developmentEnvironment
+     * @param  \SimpleXMLElement $xml
+     * @param  string            $developmentEnvironment
      * @throws ConfigurationException If XML is improperly configured.
      */
     public function __construct(\SimpleXMLElement $xml, string $developmentEnvironment)
@@ -46,7 +46,7 @@ class Wrapper
     /**
      * Detects data source (itself encapsulating database server settings) from a XML 'server' tag
      *
-     * @param \SimpleXMLElement $databaseInfo
+     * @param  \SimpleXMLElement $databaseInfo
      * @return DataSource
      * @throws ConfigurationException
      */
@@ -57,20 +57,20 @@ class Wrapper
             throw new ConfigurationException("Child tag 'driver' is mandatory for 'server' tags");
         }
         switch ($driver) {
-            case "couchbase":
-                return new CouchbaseDataSource($databaseInfo);
-            case "memcache":
-                return new MemcacheDataSource($databaseInfo);
-            case "memcached":
-                return new MemcachedDataSource($databaseInfo);
-            case "redis":
-                return new RedisDataSource($databaseInfo);
-            case "apc":
-                return new APCDataSource();
-            case "apcu":
-                return new APCuDataSource();
-            default:
-                throw new ConfigurationException("NoSQL driver not supported: " . $driver);
+        case "couchbase":
+            return new CouchbaseDataSource($databaseInfo);
+        case "memcache":
+            return new MemcacheDataSource($databaseInfo);
+        case "memcached":
+            return new MemcachedDataSource($databaseInfo);
+        case "redis":
+            return new RedisDataSource($databaseInfo);
+        case "apc":
+            return new APCDataSource();
+        case "apcu":
+            return new APCuDataSource();
+        default:
+            throw new ConfigurationException("NoSQL driver not supported: " . $driver);
         }
     }
 }

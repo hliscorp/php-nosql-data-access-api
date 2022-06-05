@@ -10,7 +10,7 @@ interface Server
     /**
      * Connects to nosql provider
      *
-     * @param DataSource $dataSource
+     * @param  DataSource $dataSource
      * @throws ConfigurationException If developer misconfigures data source.
      * @throws ConnectionException If connection to database server fails.
      */

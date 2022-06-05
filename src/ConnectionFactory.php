@@ -16,6 +16,7 @@ class ConnectionFactory
 
     /**
      * Stores registered data sources.
+     *
      * @var array<string,DataSource>
      */
     private static array $dataSources;
@@ -28,7 +29,7 @@ class ConnectionFactory
     /**
      * Registers a data source object encapsulatings connection info based on unique server identifier.
      *
-     * @param string $serverName Unique identifier of server you will be connecting to.
+     * @param string     $serverName Unique identifier of server you will be connecting to.
      * @param DataSource $dataSource
      */
     public static function setDataSource(string $serverName, DataSource $dataSource): void
@@ -40,7 +41,7 @@ class ConnectionFactory
      * Opens connection to database server (if not already open) according to DataSource and
      * returns an object of that connection to delegate operations to.
      *
-     * @param string $serverName Unique identifier of server you will be connecting to.
+     * @param  string $serverName Unique identifier of server you will be connecting to.
      * @throws ConnectionException If connection to NoSQL server fails.
      * @return Driver
      */
@@ -56,7 +57,7 @@ class ConnectionFactory
     /**
      * Connects to database automatically.
      *
-     * @param string $serverName Unique identifier of server you will be connecting to.
+     * @param  string $serverName Unique identifier of server you will be connecting to.
      * @throws ConnectionException If connection to NoSQL server fails
      */
     private function __construct(string $serverName)
