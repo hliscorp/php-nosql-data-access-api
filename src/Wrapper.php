@@ -9,7 +9,7 @@ use Lucinda\NoSQL\Vendor\Memcached\DataSource as MemcachedDataSource;
 use Lucinda\NoSQL\Vendor\Redis\DataSource as RedisDataSource;
 
 /**
- * Reads server tags from XML into DataSource objects and injects latter into ConnectionSingleton/ConnectionFactory classes
+ * Reads server tags from XML into DataSource objects and injects latter into ConnectionFactory classes
  * to be used in querying later on
  */
 class Wrapper
@@ -34,10 +34,10 @@ class Wrapper
                     if (!isset($element["name"])) {
                         throw new ConfigurationException("Attribute 'name' is mandatory for 'server' tag");
                     }
-                    ConnectionFactory::setDataSource((string) $element["name"], $this->getDataSource($element));
                 }
+                ConnectionFactory::setDataSource((string) $element["name"], $this->getDataSource($element));
             } else {
-                ConnectionSingleton::setDataSource($this->getDataSource($xml["server"]));
+                ConnectionFactory::setDataSource("", $this->getDataSource($xml["server"]));
             }
         }
     }
