@@ -56,21 +56,14 @@ class Wrapper
         if (!$driver) {
             throw new ConfigurationException("Child tag 'driver' is mandatory for 'server' tags");
         }
-        switch ($driver) {
-        case "couchbase":
-            return new CouchbaseDataSource($databaseInfo);
-        case "memcache":
-            return new MemcacheDataSource($databaseInfo);
-        case "memcached":
-            return new MemcachedDataSource($databaseInfo);
-        case "redis":
-            return new RedisDataSource($databaseInfo);
-        case "apc":
-            return new APCDataSource();
-        case "apcu":
-            return new APCuDataSource();
-        default:
-            throw new ConfigurationException("NoSQL driver not supported: " . $driver);
-        }
+        return match ($driver) {
+            "couchbase" => new CouchbaseDataSource($databaseInfo),
+            "memcache" => new MemcacheDataSource($databaseInfo),
+            "memcached" => new MemcachedDataSource($databaseInfo),
+            "redis" => new RedisDataSource($databaseInfo),
+            "apc" => new APCDataSource(),
+            "apcu" => new APCuDataSource(),
+            default => throw new ConfigurationException("NoSQL driver not supported: " . $driver)
+        };
     }
 }
