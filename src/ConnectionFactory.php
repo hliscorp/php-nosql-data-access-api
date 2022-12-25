@@ -90,7 +90,7 @@ class ConnectionFactory
             if ($this->driver instanceof Server) {
                 $this->driver->disconnect();
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
     }
 }
