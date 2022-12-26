@@ -5,7 +5,7 @@ namespace Lucinda\NoSQL;
 /**
  * Implements a singleton factory for multiple NoSQL servers connection.
  */
-class ConnectionFactory
+final class ConnectionFactory
 {
     /**
      * Stores open connections.
