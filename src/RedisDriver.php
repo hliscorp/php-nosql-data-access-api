@@ -36,7 +36,7 @@ class RedisDriver implements Driver, Server
                 foreach ($servers as $name=>$port) {
                     $serverList[] = $name.":".$port;
                 }
-                $redis = new \RedisCluster(null, $serverList, $dataSource->getTimeout(), $dataSource->isPersistent());
+                $redis = new \RedisCluster(null, $serverList, (float) $dataSource->getTimeout(), $dataSource->isPersistent());
             } catch (\RedisClusterException $e) {
                 throw new ConnectionException($e->getMessage());
             }
@@ -46,12 +46,12 @@ class RedisDriver implements Driver, Server
                 $host = key($servers);
                 $redis = new \Redis();
                 if ($dataSource->isPersistent()) {
-                    $result = $redis->pconnect($host, $port, $dataSource->getTimeout());
+                    $result = $redis->pconnect($host, $port, (float) $dataSource->getTimeout());
                     if (!$result) {
                         throw new ConnectionException();
                     }
                 } else {
-                    $result = $redis->connect($host, $port, $dataSource->getTimeout());
+                    $result = $redis->connect($host, $port, (float) $dataSource->getTimeout());
                     if (!$result) {
                         throw new ConnectionException();
                     }
@@ -181,7 +181,6 @@ class RedisDriver implements Driver, Server
             throw new OperationFailedException($this->connection->getLastError());
         }
     }
-    
     
     /**
      * Gets a pointer to native wrapped object for advanced operations.
