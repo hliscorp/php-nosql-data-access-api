@@ -1,5 +1,5 @@
 {
-    "name": "lucinda/nosql-data-access",
+    "name": "hlis/nosql-data-access",
     "type": "library",
     "description": "API abstracting communication with NoSQL key-value store databases through a PDO-like structure",
     "keywords": ["nosql","driver","redis","couchbase","memcache","memcached","apc","apcu"],
@@ -10,7 +10,7 @@
         "ext-SimpleXML": "*"
     },
     "require-dev": {
-        "lucinda/unit-testing": "^1.0"
+        "hlis/unit-testing": "^1.0"
     },
     "autoload": {
     	"psr-4": {
