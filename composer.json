@@ -1,8 +1,17 @@
 {
-    "name": "hlis/nosql-data-access",
+    "name": "lucinda/nosql-data-access",
     "type": "library",
     "description": "Abstracts communication with NoSQL servers/solutions via drivers",
-    "keywords": ["nosql","driver","redis","couchbase","memcache","memcached","apc","apcu"],
+    "keywords": [
+        "nosql",
+        "driver",
+        "redis",
+        "couchbase",
+        "memcache",
+        "memcached",
+        "apc",
+        "apcu"
+    ],
     "homepage": "http://www.lucinda-framework.com/nosql-data-access-api",
     "license": "MIT",
     "authors": [
