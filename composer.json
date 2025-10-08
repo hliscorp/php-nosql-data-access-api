@@ -1,8 +1,17 @@
 {
-    "name": "hlis/nosql-data-access",
+    "name": "lucinda/nosql-data-access",
     "type": "library",
     "description": "API abstracting communication with NoSQL key-value store databases through a PDO-like structure",
-    "keywords": ["nosql","driver","redis","couchbase","memcache","memcached","apc","apcu"],
+    "keywords": [
+        "nosql",
+        "driver",
+        "redis",
+        "couchbase",
+        "memcache",
+        "memcached",
+        "apc",
+        "apcu"
+    ],
     "homepage": "https://github.com/aherne/php-nosql-data-access-api",
     "license": "MIT",
     "require": {
@@ -10,21 +19,27 @@
         "ext-SimpleXML": "*"
     },
     "require-dev": {
-        "hlis/unit-testing": "^2.0"
+        "lucinda/unit-testing": "^2.0"
     },
     "autoload": {
-    	"psr-4": {
-        	"Lucinda\\NoSQL\\": "src/",
-        	"Lucinda\\NoSQL\\Vendor\\": "drivers/",
+        "psr-4": {
+            "Lucinda\\NoSQL\\": "src/",
+            "Lucinda\\NoSQL\\Vendor\\": "drivers/",
             "Test\\Lucinda\\NoSQL\\": "tests/",
             "Test\\Lucinda\\NoSQL\\Vendor\\": "tests_drivers/"
-    	}
+        }
     },
     "authors": [
         {
             "name": "Lucian Popescu",
             "email": "lucian.gabriel.popescu@gmail.com",
             "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/hliscorp/unit-testing"
         }
     ]
 }
