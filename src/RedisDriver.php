@@ -90,6 +90,11 @@ class RedisDriver implements Driver, Server
         }
     }
 
+    public function setNxEx(string $key, mixed $value, int $ttl): bool
+    {
+        return $this->connection->set($key, $value, ['nx', 'ex' => $ttl]) === true;
+    }
+
     /**
      * {@inheritDoc}
      * @see Driver::get()
